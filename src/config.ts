@@ -51,6 +51,7 @@ export const STORY_FRAMES: StoryFrame[] = [
 ];
 
 export const GAME_CONFIG = {
+  SKIP_INTRO_STORY: true,
   INITIAL_MONEY: 100,
   INITIAL_POPULATION: 20,
   BASE_INCOME_PER_SECOND: 0.5,

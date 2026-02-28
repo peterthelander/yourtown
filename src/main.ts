@@ -3,7 +3,7 @@ import { BuildingManager } from './buildings';
 import { UI } from './ui';
 import { StoryManager } from './story';
 import { GameEngine } from './gameLoop';
-import { BUILDING_COSTS, BUILDING_ICONS, BUILDING_COLORS } from './config';
+import { BUILDING_COSTS, BUILDING_ICONS, BUILDING_COLORS, GAME_CONFIG } from './config';
 
 class Game {
   private gameState: GameStateManager;
@@ -23,10 +23,16 @@ class Game {
   init(): void {
     this.setupStory();
     this.setupBuilding();
-    this.showStory();
 
     // prepare buttons right away so icons are visible even during story
     this.prepareBuildButtons();
+
+    if (GAME_CONFIG.SKIP_INTRO_STORY) {
+      this.startGame();
+      return;
+    }
+
+    this.showStory();
   }
 
   private setupStory(): void {
