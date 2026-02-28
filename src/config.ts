@@ -1,0 +1,60 @@
+import { BuildingType, StoryFrame } from './types';
+
+export const BUILDING_COSTS: Record<BuildingType, number> = {
+  house: 50,
+  library: 100,
+  workplace: 80,
+  school: 120,
+  gym: 70,
+  grocery: 60,
+};
+
+export const BUILDING_ICONS: Record<BuildingType, string> = {
+  house: '🏠',
+  library: '📚',
+  workplace: '🏭',
+  school: '🎓',
+  gym: '💪',
+  grocery: '🛒',
+};
+
+export const BUILDING_COLORS: Record<BuildingType, string> = {
+  house: '#FF6B6B',
+  library: '#4ECDC4',
+  workplace: '#95E1D3',
+  school: '#FFE66D',
+  gym: '#A8E6CF',
+  grocery: '#FF8B94',
+};
+
+export const STORY_FRAMES: StoryFrame[] = [
+  {
+    img: '',
+    text: 'In a distant land, a group of brave people search for unclaimed terrain.',
+  },
+  {
+    img: '',
+    text: 'After many days, they find a wide empty plain. You have been chosen as mayor.',
+  },
+  {
+    img: '',
+    text: 'With $100 and 20 hopeful settlers, your job is to guide the town to prosperity.',
+  },
+  {
+    img: '',
+    text: 'Build homes, schools, workplaces and more. Watch your population and funds.',
+  },
+  {
+    img: '',
+    text: 'Click "Next" to get started.',
+  },
+];
+
+export const GAME_CONFIG = {
+  INITIAL_MONEY: 100,
+  INITIAL_POPULATION: 20,
+  BASE_INCOME_PER_SECOND: 0.5,
+  BASE_POPULATION_GROWTH_RATE: 0.1,
+  GAME_LOOP_INTERVAL: 50, // ms
+  ANIMATION_INTERVAL: 500, // ms for people movement
+};

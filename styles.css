@@ -1,0 +1,105 @@
+/* basic resets */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: sans-serif;
+}
+
+#story-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+#story-container.hidden {
+    display: none;
+}
+
+#story-image {
+    max-width: 80%;
+    max-height: 60%;
+    margin-bottom: 1rem;
+}
+
+#story-text {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+#game-container.hidden {
+    display: none;
+}
+
+header {
+    height: 40px;
+    background: #eee;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 1rem;
+    box-sizing: border-box;
+}
+
+#stats span {
+    margin-left: 1rem;
+    font-weight: bold;
+}
+
+#town-view {
+    flex: 1;
+    position: relative;
+    background: #cfe;
+    overflow: hidden;
+}
+
+footer {
+    height: 80px;
+    background: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+footer .build-btn {
+    margin: 0 5px;
+    padding: 5px 10px;
+}
+
+.building {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border: 2px solid #333;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.building:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.person {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: red;
+    border-radius: 50%;
+}
