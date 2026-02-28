@@ -73,6 +73,36 @@ export class UI {
     element.style.top = Math.random() * Math.max(1, rect.height - offsetHeight) + 'px';
   }
 
+  placeWithoutOverlap(element: HTMLElement, container: HTMLElement, maxAttempts = 200): boolean {
+    const containerRect = container.getBoundingClientRect();
+    const offsetWidth = element.offsetWidth || 10;
+    const offsetHeight = element.offsetHeight || 10;
+    const existingBuildings = Array.from(container.getElementsByClassName('building'))
+      .filter((building) => building !== element) as HTMLElement[];
+
+    for (let i = 0; i < maxAttempts; i++) {
+      const x = Math.random() * Math.max(1, containerRect.width - offsetWidth);
+      const y = Math.random() * Math.max(1, containerRect.height - offsetHeight);
+
+      const overlaps = existingBuildings.some((building) => {
+        const bx = parseFloat(building.style.left) || 0;
+        const by = parseFloat(building.style.top) || 0;
+        const bWidth = building.offsetWidth || offsetWidth;
+        const bHeight = building.offsetHeight || offsetHeight;
+
+        return x < bx + bWidth && x + offsetWidth > bx && y < by + bHeight && y + offsetHeight > by;
+      });
+
+      if (!overlaps) {
+        element.style.left = x + 'px';
+        element.style.top = y + 'px';
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   updatePersonPosition(element: HTMLElement, x: number, y: number): void {
     element.style.left = x + 'px';
     element.style.top = y + 'px';
