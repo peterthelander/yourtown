@@ -21,22 +21,23 @@ export class GameEngine {
     const state = this.gameState.getState();
 
     for (let i = 0; i < state.population; i++) {
-      this.spawnPerson();
+      this.spawnPerson(true);
     }
   }
 
-  private spawnPerson(): void {
+  private spawnPerson(isInitialPopulation = false): void {
     const townView = this.ui.getTownView();
     const element = this.ui.addPersonElement();
+    const lifeSpanMs =
+      GAME_CONFIG.MIN_LIFESPAN_MS +
+      Math.random() * (GAME_CONFIG.MAX_LIFESPAN_MS - GAME_CONFIG.MIN_LIFESPAN_MS);
     const person: Person = {
       x: 0,
       y: 0,
       element,
-      ageMs: 0,
+      ageMs: isInitialPopulation ? Math.random() * lifeSpanMs : 0,
       gender: Math.random() < 0.5 ? 'male' : 'female',
-      lifeSpanMs:
-        GAME_CONFIG.MIN_LIFESPAN_MS +
-        Math.random() * (GAME_CONFIG.MAX_LIFESPAN_MS - GAME_CONFIG.MIN_LIFESPAN_MS),
+      lifeSpanMs,
       isDying: false,
       deathTimerMs: 0,
     };
