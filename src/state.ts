@@ -1,4 +1,4 @@
-import { GameState, BuildingType } from './types';
+import { GameState, BuildingType, Person } from './types';
 import { GAME_CONFIG } from './config';
 
 export class GameStateManager {
@@ -47,8 +47,15 @@ export class GameStateManager {
     this.state.populationGrowthRate += amount;
   }
 
-  addPerson(x: number, y: number, element: HTMLElement): void {
-    this.state.people.push({ x, y, element });
+  addPerson(person: Person): void {
+    this.state.people.push(person);
+  }
+
+  removePerson(person: Person): void {
+    const index = this.state.people.indexOf(person);
+    if (index >= 0) {
+      this.state.people.splice(index, 1);
+    }
   }
 
   getPeople() {
