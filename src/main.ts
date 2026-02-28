@@ -116,18 +116,25 @@ class Game {
   }
 
   private handleBuild(type: keyof typeof BUILDING_COSTS): void {
-    if (!this.buildingManager.build(type)) {
-      alert('Not enough money to build ' + type);
-      return;
-    }
-
-    // Create and place building
+    // Create and place building first to ensure there is room
     const townView = this.ui.getTownView();
     const icon = BUILDING_ICONS[type];
     const color = BUILDING_COLORS[type];
     const buildingElement = this.ui.addBuildingElement(type, icon, color);
-    this.ui.randomizePosition(buildingElement, townView);
     townView.appendChild(buildingElement);
+
+    const placed = this.ui.placeWithoutOverlap(buildingElement, townView);
+    if (!placed) {
+      buildingElement.remove();
+      alert('No space left to place ' + type);
+      return;
+    }
+
+    if (!this.buildingManager.build(type)) {
+      buildingElement.remove();
+      alert('Not enough money to build ' + type);
+      return;
+    }
 
     // Add to game state
     const x = parseFloat(buildingElement.style.left);
