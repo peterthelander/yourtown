@@ -69,20 +69,37 @@ export class UI {
     const rect = container.getBoundingClientRect();
     const offsetWidth = element.offsetWidth || 10;
     const offsetHeight = element.offsetHeight || 10;
-    element.style.left = Math.random() * Math.max(1, rect.width - offsetWidth) + 'px';
-    element.style.top = Math.random() * Math.max(1, rect.height - offsetHeight) + 'px';
+
+    const maxX = rect.width - offsetWidth;
+    const maxY = rect.height - offsetHeight;
+
+    if (maxX < 0 || maxY < 0) {
+      element.style.left = '0px';
+      element.style.top = '0px';
+      return;
+    }
+
+    element.style.left = Math.random() * maxX + 'px';
+    element.style.top = Math.random() * maxY + 'px';
   }
 
   placeWithoutOverlap(element: HTMLElement, container: HTMLElement, maxAttempts = 200): boolean {
     const containerRect = container.getBoundingClientRect();
     const offsetWidth = element.offsetWidth || 10;
     const offsetHeight = element.offsetHeight || 10;
+    const maxX = containerRect.width - offsetWidth;
+    const maxY = containerRect.height - offsetHeight;
+
+    if (maxX < 0 || maxY < 0) {
+      return false;
+    }
+
     const existingBuildings = Array.from(container.getElementsByClassName('building'))
       .filter((building) => building !== element) as HTMLElement[];
 
     for (let i = 0; i < maxAttempts; i++) {
-      const x = Math.random() * Math.max(1, containerRect.width - offsetWidth);
-      const y = Math.random() * Math.max(1, containerRect.height - offsetHeight);
+      const x = Math.random() * maxX;
+      const y = Math.random() * maxY;
 
       const overlaps = existingBuildings.some((building) => {
         const bx = parseFloat(building.style.left) || 0;
