@@ -2,6 +2,7 @@ import { GameStateManager } from './state';
 import { BuildingManager } from './buildings';
 import { UI } from './ui';
 import { GAME_CONFIG } from './config';
+import { Person } from './types';
 
 export class GameEngine {
   constructor(
@@ -18,14 +19,35 @@ export class GameEngine {
 
   private spawnInitialPeople(): void {
     const state = this.gameState.getState();
-    const townView = this.ui.getTownView();
 
     for (let i = 0; i < state.population; i++) {
-      const element = this.ui.addPersonElement();
-      this.ui.randomizePosition(element, townView);
-      townView.appendChild(element);
-      this.gameState.addPerson(0, 0, element);
+      this.spawnPerson();
     }
+  }
+
+  private spawnPerson(): void {
+    const townView = this.ui.getTownView();
+    const element = this.ui.addPersonElement();
+    const person: Person = {
+      x: 0,
+      y: 0,
+      element,
+      ageMs: 0,
+      gender: Math.random() < 0.5 ? 'male' : 'female',
+      lifeSpanMs:
+        GAME_CONFIG.MIN_LIFESPAN_MS +
+        Math.random() * (GAME_CONFIG.MAX_LIFESPAN_MS - GAME_CONFIG.MIN_LIFESPAN_MS),
+      isDying: false,
+      deathTimerMs: 0,
+    };
+
+    this.ui.randomizePosition(element, townView);
+    person.x = parseFloat(element.style.left) || 0;
+    person.y = parseFloat(element.style.top) || 0;
+    this.ui.updatePersonAppearance(person);
+
+    townView.appendChild(element);
+    this.gameState.addPerson(person);
   }
 
   private startPeopleAnimation(): void {
@@ -33,6 +55,26 @@ export class GameEngine {
     const animationLoop = () => {
       const people = this.gameState.getPeople();
       people.forEach((person) => {
+        if (person.isDying) {
+          person.deathTimerMs -= GAME_CONFIG.ANIMATION_INTERVAL;
+          if (person.deathTimerMs <= 0) {
+            person.element.remove();
+            this.gameState.removePerson(person);
+            this.gameState.addPopulation(-1);
+          }
+          return;
+        }
+
+        person.ageMs += GAME_CONFIG.ANIMATION_INTERVAL;
+        if (person.ageMs >= person.lifeSpanMs) {
+          person.isDying = true;
+          person.deathTimerMs = GAME_CONFIG.DEATH_MARKER_MS;
+          this.ui.updatePersonAppearance(person);
+          return;
+        }
+
+        this.ui.updatePersonAppearance(person);
+
         const rect = townView.getBoundingClientRect();
         const dx = (Math.random() - 0.5) * 20;
         const dy = (Math.random() - 0.5) * 20;
@@ -75,10 +117,7 @@ export class GameEngine {
       const townView = this.ui.getTownView();
       const people = this.gameState.getPeople();
       while (people.length < Math.floor(state.population)) {
-        const element = this.ui.addPersonElement();
-        this.ui.randomizePosition(element, townView);
-        townView.appendChild(element);
-        this.gameState.addPerson(0, 0, element);
+        this.spawnPerson();
       }
 
       // Update UI

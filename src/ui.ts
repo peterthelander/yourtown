@@ -1,6 +1,5 @@
-import { GameState } from './types';
-
-const PERSON_EMOJIS = ['👨', '👩', '👦', '👧'];
+import { GAME_CONFIG } from './config';
+import { GameState, Person } from './types';
 
 export class UI {
   private moneyElement: HTMLElement;
@@ -54,8 +53,32 @@ export class UI {
   addPersonElement(): HTMLElement {
     const div = document.createElement('div');
     div.className = 'person';
-    div.textContent = PERSON_EMOJIS[Math.floor(Math.random() * PERSON_EMOJIS.length)];
+    div.textContent = '👶';
     return div;
+  }
+
+  updatePersonAppearance(person: Person): void {
+    if (person.isDying) {
+      person.element.textContent = '✝️';
+      return;
+    }
+
+    if (person.ageMs < GAME_CONFIG.BABY_STAGE_MS) {
+      person.element.textContent = '👶';
+      return;
+    }
+
+    if (person.ageMs < GAME_CONFIG.CHILD_STAGE_MS) {
+      person.element.textContent = person.gender === 'male' ? '👦' : '👧';
+      return;
+    }
+
+    if (person.ageMs < GAME_CONFIG.ADULT_STAGE_MS) {
+      person.element.textContent = person.gender === 'male' ? '👨' : '👩';
+      return;
+    }
+
+    person.element.textContent = person.gender === 'male' ? '👴' : '👵';
   }
 
   getStoryButton(): HTMLElement {

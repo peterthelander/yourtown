@@ -9,6 +9,11 @@ export interface Person {
   x: number;
   y: number;
   element: HTMLElement;
+  ageMs: number;
+  gender: 'male' | 'female';
+  lifeSpanMs: number;
+  isDying: boolean;
+  deathTimerMs: number;
 }
 
 export interface StoryFrame {
