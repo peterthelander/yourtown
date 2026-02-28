@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "A browser-based town building game",
   "scripts": {
-    "build": "esbuild src/main.ts --bundle --outfile=dist/bundle.js",
+    "build": "esbuild src/main.ts --bundle --outfile=dist/bundle.js && cp index.html dist/index.html",
     "dev": "esbuild src/main.ts --bundle --outfile=dist/bundle.js --watch"
   },
   "devDependencies": {
