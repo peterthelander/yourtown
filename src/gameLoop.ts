@@ -40,8 +40,11 @@ export class GameEngine {
         let x = parseFloat(person.element.style.left) + dx;
         let y = parseFloat(person.element.style.top) + dy;
 
-        x = Math.max(0, Math.min(rect.width - 10, x));
-        y = Math.max(0, Math.min(rect.height - 10, y));
+        const personWidth = person.element.offsetWidth || 20;
+        const personHeight = person.element.offsetHeight || 20;
+
+        x = Math.max(0, Math.min(rect.width - personWidth, x));
+        y = Math.max(0, Math.min(rect.height - personHeight, y));
 
         this.ui.updatePersonPosition(person.element, x, y);
         person.x = x;

@@ -1,5 +1,7 @@
 import { GameState } from './types';
 
+const PERSON_EMOJIS = ['👨', '👩', '👦', '👧'];
+
 export class UI {
   private moneyElement: HTMLElement;
   private populationElement: HTMLElement;
@@ -52,6 +54,7 @@ export class UI {
   addPersonElement(): HTMLElement {
     const div = document.createElement('div');
     div.className = 'person';
+    div.textContent = PERSON_EMOJIS[Math.floor(Math.random() * PERSON_EMOJIS.length)];
     return div;
   }
 
