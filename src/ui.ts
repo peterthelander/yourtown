@@ -1,6 +1,39 @@
 import { GAME_CONFIG } from './config';
 import { GameState, Person } from './types';
 
+const PERSON_EMOJIS = {
+  dying: '✝️',
+  baby: {
+    default: '🧍',
+    male: '🧍‍♂️',
+    female: '🧍‍♀️',
+  },
+  child: {
+    default: '🚶',
+    male: '🚶‍♂️',
+    female: '🚶‍♀️',
+  },
+  adult: {
+    default: '🧍',
+    male: '🧍‍♂️',
+    female: '🧍‍♀️',
+  },
+  elder: {
+    default: '🧑‍🦯',
+    male: '👨‍🦯',
+    female: '👩‍🦯',
+  },
+} as const;
+
+function getGenderedEmoji(
+  emojiSet: { default: string; male: string; female: string },
+  gender: Person['gender'],
+): string {
+  if (gender === 'male') return emojiSet.male;
+  if (gender === 'female') return emojiSet.female;
+  return emojiSet.default;
+}
+
 export class UI {
   private moneyElement: HTMLElement;
   private populationElement: HTMLElement;
@@ -53,32 +86,32 @@ export class UI {
   addPersonElement(): HTMLElement {
     const div = document.createElement('div');
     div.className = 'person';
-    div.textContent = '👶';
+    div.textContent = PERSON_EMOJIS.baby.default;
     return div;
   }
 
   updatePersonAppearance(person: Person): void {
     if (person.isDying) {
-      person.element.textContent = '✝️';
+      person.element.textContent = PERSON_EMOJIS.dying;
       return;
     }
 
     if (person.ageMs < GAME_CONFIG.BABY_STAGE_MS) {
-      person.element.textContent = '👶';
+      person.element.textContent = getGenderedEmoji(PERSON_EMOJIS.baby, person.gender);
       return;
     }
 
     if (person.ageMs < GAME_CONFIG.CHILD_STAGE_MS) {
-      person.element.textContent = person.gender === 'male' ? '👦' : '👧';
+      person.element.textContent = getGenderedEmoji(PERSON_EMOJIS.child, person.gender);
       return;
     }
 
     if (person.ageMs < GAME_CONFIG.ADULT_STAGE_MS) {
-      person.element.textContent = person.gender === 'male' ? '👨' : '👩';
+      person.element.textContent = getGenderedEmoji(PERSON_EMOJIS.adult, person.gender);
       return;
     }
 
-    person.element.textContent = person.gender === 'male' ? '👴' : '👵';
+    person.element.textContent = getGenderedEmoji(PERSON_EMOJIS.elder, person.gender);
   }
 
   getStoryButton(): HTMLElement {
