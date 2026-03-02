@@ -93,12 +93,11 @@ export class UI {
     return this.townView;
   }
 
-  addBuildingElement(type: string, icon: string, color: string): HTMLElement {
+  addBuildingElement(type: string, icon: string): HTMLElement {
     const div = document.createElement('div');
     div.className = 'building';
     div.textContent = icon;
     div.title = type;
-    div.style.backgroundColor = color;
     return div;
   }
 

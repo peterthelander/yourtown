@@ -3,7 +3,7 @@ import { BuildingManager } from './buildings';
 import { UI } from './ui';
 import { StoryManager } from './story';
 import { GameEngine } from './gameLoop';
-import { BUILDING_COSTS, BUILDING_ICONS, BUILDING_COLORS, GAME_CONFIG } from './config';
+import { BUILDING_COSTS, BUILDING_ICONS, GAME_CONFIG } from './config';
 
 class Game {
   private gameState: GameStateManager;
@@ -114,8 +114,7 @@ class Game {
     // Create and place building first to ensure there is room
     const townView = this.ui.getTownView();
     const icon = BUILDING_ICONS[type];
-    const color = BUILDING_COLORS[type];
-    const buildingElement = this.ui.addBuildingElement(type, icon, color);
+    const buildingElement = this.ui.addBuildingElement(type, icon);
     townView.appendChild(buildingElement);
 
     const placed = this.ui.placeWithoutOverlap(buildingElement, townView);
