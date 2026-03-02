@@ -2,9 +2,9 @@ import { BuildingType, StoryFrame } from './types';
 
 export const BUILDING_COSTS: Record<BuildingType, number> = {
   house: 50,
-  library: 100,
+  library: 90,
   workplace: 80,
-  school: 120,
+  school: 100,
   gym: 70,
   grocery: 60,
 };
