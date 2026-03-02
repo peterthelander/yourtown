@@ -24,8 +24,8 @@ class Game {
     this.setupStory();
     this.setupBuilding();
 
-    // prepare buttons right away so icons are visible even during story
-    this.prepareBuildButtons();
+    // prepare selector right away so options are visible even during story
+    this.prepareBuildingSelector();
 
     if (GAME_CONFIG.SKIP_INTRO_STORY) {
       this.startGame();
@@ -73,21 +73,26 @@ class Game {
 
   private startGame(): void {
     this.ui.showGame();
-    this.setupBuildingButtons();
+    this.setupBuildAction();
     this.engine.start();
   }
 
-  private prepareBuildButtons(): void {
-    const buildBtns = this.ui.getBuildButtons();
-    buildBtns.forEach((btn) => {
-      const type = btn.getAttribute('data-type');
-      if (type) {
-        const icon = BUILDING_ICONS[type as keyof typeof BUILDING_ICONS];
-        const cost = BUILDING_COSTS[type as keyof typeof BUILDING_COSTS];
-        btn.innerText = `${icon} ${type.charAt(0).toUpperCase() + type.slice(1)} ($${cost})`;
-        const color = BUILDING_COLORS[type as keyof typeof BUILDING_COLORS];
-        btn.style.backgroundColor = color;
-      }
+  private formatBuildingLabel(type: keyof typeof BUILDING_COSTS): string {
+    const icon = BUILDING_ICONS[type];
+    const cost = BUILDING_COSTS[type];
+    return `${icon} ${type.charAt(0).toUpperCase() + type.slice(1)} ($${cost})`;
+  }
+
+  private prepareBuildingSelector(): void {
+    const select = this.ui.getBuildingTypeSelect();
+    const buildingTypes = Object.keys(BUILDING_COSTS) as (keyof typeof BUILDING_COSTS)[];
+
+    select.innerHTML = '';
+    buildingTypes.forEach((type) => {
+      const option = document.createElement('option');
+      option.value = type;
+      option.textContent = this.formatBuildingLabel(type);
+      select.appendChild(option);
     });
   }
 
@@ -95,23 +100,13 @@ class Game {
     // Building buttons setup will be in startGame
   }
 
-  private setupBuildingButtons(): void {
-    const buildBtns = this.ui.getBuildButtons();
+  private setupBuildAction(): void {
+    const buildBtn = this.ui.getBuildButton();
+    const select = this.ui.getBuildingTypeSelect();
 
-    buildBtns.forEach((btn) => {
-      const type = btn.getAttribute('data-type');
-      if (type) {
-        const icon = BUILDING_ICONS[type as keyof typeof BUILDING_ICONS];
-        const cost = BUILDING_COSTS[type as keyof typeof BUILDING_COSTS];
-        btn.innerText = `${icon} ${type.charAt(0).toUpperCase() + type.slice(1)} ($${cost})`;
-      }
-
-      btn.addEventListener('click', () => {
-        const t = btn.getAttribute('data-type');
-        if (t) {
-          this.handleBuild(t as keyof typeof BUILDING_COSTS);
-        }
-      });
+    buildBtn.addEventListener('click', () => {
+      const selectedType = select.value as keyof typeof BUILDING_COSTS;
+      this.handleBuild(selectedType);
     });
   }
 

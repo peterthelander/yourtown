@@ -120,8 +120,16 @@ export class UI {
     return btn;
   }
 
-  getBuildButtons(): HTMLElement[] {
-    return Array.from(document.getElementsByClassName('build-btn')) as HTMLElement[];
+  getBuildButton(): HTMLButtonElement {
+    const btn = document.getElementById('build-button') as HTMLButtonElement | null;
+    if (!btn) throw new Error('Build button not found');
+    return btn;
+  }
+
+  getBuildingTypeSelect(): HTMLSelectElement {
+    const select = document.getElementById('building-type') as HTMLSelectElement | null;
+    if (!select) throw new Error('Building type selector not found');
+    return select;
   }
 
   randomizePosition(element: HTMLElement, container: HTMLElement): void {
