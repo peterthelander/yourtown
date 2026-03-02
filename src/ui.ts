@@ -25,6 +25,25 @@ const PERSON_EMOJIS = {
   },
 } as const;
 
+const EMOJI_SCALES = {
+  baby: 0.5,
+  child: 0.75,
+  adult: 1.0,
+  elder: 1.0,
+} as const;
+
+function getEmojiStyle(age: keyof typeof PERSON_EMOJIS): {
+  transform: string;
+  transformOrigin: string;
+} {
+  const scale = EMOJI_SCALES[age as keyof typeof EMOJI_SCALES] ?? EMOJI_SCALES.adult;
+
+  return {
+    transform: `scale(${scale})`,
+    transformOrigin: 'bottom center',
+  };
+}
+
 function getGenderedEmoji(
   emojiSet: { default: string; male: string; female: string },
   gender: Person['gender'],
@@ -93,25 +112,30 @@ export class UI {
   updatePersonAppearance(person: Person): void {
     if (person.isDying) {
       person.element.textContent = PERSON_EMOJIS.dying;
+      Object.assign(person.element.style, getEmojiStyle('adult'));
       return;
     }
 
     if (person.ageMs < GAME_CONFIG.BABY_STAGE_MS) {
       person.element.textContent = getGenderedEmoji(PERSON_EMOJIS.baby, person.gender);
+      Object.assign(person.element.style, getEmojiStyle('baby'));
       return;
     }
 
     if (person.ageMs < GAME_CONFIG.CHILD_STAGE_MS) {
       person.element.textContent = getGenderedEmoji(PERSON_EMOJIS.child, person.gender);
+      Object.assign(person.element.style, getEmojiStyle('child'));
       return;
     }
 
     if (person.ageMs < GAME_CONFIG.ADULT_STAGE_MS) {
       person.element.textContent = getGenderedEmoji(PERSON_EMOJIS.adult, person.gender);
+      Object.assign(person.element.style, getEmojiStyle('adult'));
       return;
     }
 
     person.element.textContent = getGenderedEmoji(PERSON_EMOJIS.elder, person.gender);
+    Object.assign(person.element.style, getEmojiStyle('elder'));
   }
 
   getStoryButton(): HTMLElement {
