@@ -109,22 +109,18 @@ footer select {
 
 .building {
     position: absolute;
-    width: 45px;
-    height: 45px;
-    border: 2px solid #333;
-    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
+    font-size: 2rem;
+    line-height: 1;
     cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+    user-select: none;
+    transition: transform 0.2s;
 }
 
 .building:hover {
     transform: scale(1.1);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .person {

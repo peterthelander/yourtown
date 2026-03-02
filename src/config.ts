@@ -18,15 +18,6 @@ export const BUILDING_ICONS: Record<BuildingType, string> = {
   grocery: '🛒',
 };
 
-export const BUILDING_COLORS: Record<BuildingType, string> = {
-  house: '#FF6B6B',
-  library: '#4ECDC4',
-  workplace: '#95E1D3',
-  school: '#FFE66D',
-  gym: '#A8E6CF',
-  grocery: '#FF8B94',
-};
-
 export const STORY_FRAMES: StoryFrame[] = [
   {
     img: '',
