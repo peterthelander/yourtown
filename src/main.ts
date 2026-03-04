@@ -11,6 +11,7 @@ class Game {
   private ui: UI;
   private storyManager: StoryManager;
   private engine: GameEngine;
+  private currentLevel: number;
 
   constructor() {
     this.gameState = new GameStateManager();
@@ -18,6 +19,7 @@ class Game {
     this.ui = new UI();
     this.storyManager = new StoryManager();
     this.engine = new GameEngine(this.gameState, this.buildingManager, this.ui);
+    this.currentLevel = 1;
   }
 
   init(): void {
@@ -74,7 +76,7 @@ class Game {
   private startGame(): void {
     this.ui.showGame();
     this.setupBuildAction();
-    this.engine.start();
+    this.startLevel();
   }
 
   private formatBuildingLabel(type: keyof typeof BUILDING_COSTS): string {
@@ -110,6 +112,35 @@ class Game {
     });
   }
 
+  private getLevelGoalMessage(): string {
+    return `Level ${this.currentLevel}: Build at least ${this.currentLevel} of every building type to advance.`;
+  }
+
+  private startLevel(): void {
+    this.ui.getTownView().innerHTML = '';
+    this.gameState = new GameStateManager();
+    this.buildingManager = new BuildingManager(this.gameState);
+    this.engine = new GameEngine(this.gameState, this.buildingManager, this.ui);
+    this.engine.start();
+    this.ui.updateStats(this.gameState.getState());
+
+    alert(
+      `${this.getLevelGoalMessage()}\n\nYou start this level from scratch with fresh money, population, and no buildings.`
+    );
+  }
+
+  private isCurrentLevelComplete(): boolean {
+    const buildingTypes = Object.keys(BUILDING_COSTS) as (keyof typeof BUILDING_COSTS)[];
+    return buildingTypes.every((type) => this.gameState.getBuildingCount(type) >= this.currentLevel);
+  }
+
+  private advanceToNextLevel(): void {
+    this.engine.stop();
+    alert(`Great job! You completed Level ${this.currentLevel}.`);
+    this.currentLevel += 1;
+    this.startLevel();
+  }
+
   private handleBuild(type: keyof typeof BUILDING_COSTS): void {
     // Create and place building first to ensure there is room
     const townView = this.ui.getTownView();
@@ -137,6 +168,10 @@ class Game {
 
     // Update UI immediately
     this.ui.updateStats(this.gameState.getState());
+
+    if (this.isCurrentLevelComplete()) {
+      this.advanceToNextLevel();
+    }
   }
 }
 
