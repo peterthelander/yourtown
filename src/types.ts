@@ -14,6 +14,7 @@ export interface Person {
   lifeSpanMs: number;
   isDying: boolean;
   deathTimerMs: number;
+  currentDestinationType?: BuildingType | 'wander';
 }
 
 export interface StoryFrame {
@@ -31,4 +32,12 @@ export interface GameState {
   populationGrowthRate: number;
 }
 
-export type BuildingType = 'house' | 'library' | 'workplace' | 'school' | 'gym' | 'grocery';
+export type BuildingType =
+  | 'house'
+  | 'library'
+  | 'workplace'
+  | 'school'
+  | 'gym'
+  | 'grocery'
+  | 'hospital'
+  | 'cemetery';
