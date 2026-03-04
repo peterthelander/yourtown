@@ -7,6 +7,9 @@ import { Building, BuildingType, Person } from './types';
 type AgeGroup = 'baby' | 'child' | 'adult' | 'elder';
 
 export class GameEngine {
+  private animationTimeoutId?: number;
+  private gameLoopTimeoutId?: number;
+
   constructor(
     private gameState: GameStateManager,
     private buildingManager: BuildingManager,
@@ -17,6 +20,18 @@ export class GameEngine {
     this.spawnInitialPeople();
     this.startPeopleAnimation();
     this.startGameLoop();
+  }
+
+  stop(): void {
+    if (this.animationTimeoutId !== undefined) {
+      window.clearTimeout(this.animationTimeoutId);
+      this.animationTimeoutId = undefined;
+    }
+
+    if (this.gameLoopTimeoutId !== undefined) {
+      window.clearTimeout(this.gameLoopTimeoutId);
+      this.gameLoopTimeoutId = undefined;
+    }
   }
 
   private getAgeGroup(ageMs: number): AgeGroup {
@@ -231,7 +246,7 @@ export class GameEngine {
         person.y = y;
       });
 
-      setTimeout(animationLoop, GAME_CONFIG.ANIMATION_INTERVAL);
+      this.animationTimeoutId = window.setTimeout(animationLoop, GAME_CONFIG.ANIMATION_INTERVAL);
     };
 
     animationLoop();
@@ -260,7 +275,7 @@ export class GameEngine {
       // Update UI
       this.ui.updateStats(state);
 
-      setTimeout(gameLoop, GAME_CONFIG.GAME_LOOP_INTERVAL);
+      this.gameLoopTimeoutId = window.setTimeout(gameLoop, GAME_CONFIG.GAME_LOOP_INTERVAL);
     };
 
     gameLoop();
