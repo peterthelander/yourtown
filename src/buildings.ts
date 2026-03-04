@@ -46,7 +46,9 @@ export class BuildingManager {
         // Gym effects TBD
         break;
       case 'grocery':
-        // Grocery effects TBD
+      case 'hospital':
+      case 'cemetery':
+        // Effects handled in simulation behaviors for now
         break;
     }
   }

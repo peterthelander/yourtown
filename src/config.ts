@@ -7,6 +7,8 @@ export const BUILDING_COSTS: Record<BuildingType, number> = {
   school: 100,
   gym: 70,
   grocery: 60,
+  hospital: 120,
+  cemetery: 40,
 };
 
 export const BUILDING_ICONS: Record<BuildingType, string> = {
@@ -16,6 +18,8 @@ export const BUILDING_ICONS: Record<BuildingType, string> = {
   school: '🎓',
   gym: '💪',
   grocery: '🛒',
+  hospital: '🏥',
+  cemetery: '🪦',
 };
 
 export const STORY_FRAMES: StoryFrame[] = [
@@ -55,4 +59,5 @@ export const GAME_CONFIG = {
   MIN_LIFESPAN_MS: 360_000,
   MAX_LIFESPAN_MS: 600_000,
   DEATH_MARKER_MS: 1_500,
+  CEMETERY_END_OF_LIFE_WINDOW_MS: 30_000,
 };
