@@ -149,6 +149,7 @@ class Game {
     this.engine = new GameEngine(this.gameState, this.buildingManager, this.ui);
     this.engine.start();
     this.ui.updateStats(this.gameState.getState());
+    this.ui.updateLevel(this.currentLevel);
 
     alert(
       `${this.getLevelGoalMessage()}\n\nYou start this level from scratch with fresh money, population, and no buildings.`

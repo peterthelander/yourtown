@@ -62,7 +62,7 @@ header {
     background: #eee;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
     padding: 0 1rem;
     box-sizing: border-box;
 }
@@ -133,4 +133,8 @@ footer select {
     font-size: 40px;
     line-height: 1;
     user-select: none;
+}
+
+#level {
+    font-weight: bold;
 }
