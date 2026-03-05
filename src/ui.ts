@@ -56,6 +56,7 @@ function getGenderedEmoji(
 export class UI {
   private moneyElement: HTMLElement;
   private populationElement: HTMLElement;
+  private levelElement: HTMLElement;
   private storyContainer: HTMLElement;
   private gameContainer: HTMLElement;
   private townView: HTMLElement;
@@ -63,6 +64,7 @@ export class UI {
   constructor() {
     this.moneyElement = this.getElement('money');
     this.populationElement = this.getElement('population');
+    this.levelElement = this.getElement('level');
     this.storyContainer = this.getElement('story-container');
     this.gameContainer = this.getElement('game-container');
     this.townView = this.getElement('town-view');
@@ -77,6 +79,10 @@ export class UI {
   updateStats(state: GameState): void {
     this.moneyElement.textContent = '$' + Math.floor(state.money);
     this.populationElement.textContent = Math.floor(state.population) + ' ppl';
+  }
+
+  updateLevel(level: number): void {
+    this.levelElement.textContent = `Level ${level}`;
   }
 
   showStory(): void {
