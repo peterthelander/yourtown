@@ -40,4 +40,8 @@ export type BuildingType =
   | 'gym'
   | 'grocery'
   | 'hospital'
-  | 'cemetery';
+  | 'cemetery'
+  | 'restaurant'
+  | 'church'
+  | 'bank'
+  | 'museum';

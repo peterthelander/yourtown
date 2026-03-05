@@ -4,6 +4,18 @@ import { UI } from './ui';
 import { StoryManager } from './story';
 import { GameEngine } from './gameLoop';
 import { BUILDING_COSTS, BUILDING_ICONS, GAME_CONFIG } from './config';
+import { BuildingType } from './types';
+
+const LEVEL_ONE_BUILDINGS: BuildingType[] = ['house', 'workplace', 'grocery', 'library', 'school'];
+const UNLOCKABLE_BUILDINGS: BuildingType[] = [
+  'gym',
+  'hospital',
+  'cemetery',
+  'restaurant',
+  'church',
+  'bank',
+  'museum',
+];
 
 class Game {
   private gameState: GameStateManager;
@@ -12,6 +24,8 @@ class Game {
   private storyManager: StoryManager;
   private engine: GameEngine;
   private currentLevel: number;
+  private availableBuildingTypes: BuildingType[];
+  private lockedBuildingTypes: BuildingType[];
 
   constructor() {
     this.gameState = new GameStateManager();
@@ -20,6 +34,8 @@ class Game {
     this.storyManager = new StoryManager();
     this.engine = new GameEngine(this.gameState, this.buildingManager, this.ui);
     this.currentLevel = 1;
+    this.availableBuildingTypes = [...LEVEL_ONE_BUILDINGS];
+    this.lockedBuildingTypes = [...UNLOCKABLE_BUILDINGS];
   }
 
   init(): void {
@@ -79,7 +95,7 @@ class Game {
     this.startLevel();
   }
 
-  private formatBuildingLabel(type: keyof typeof BUILDING_COSTS): string {
+  private formatBuildingLabel(type: BuildingType): string {
     const icon = BUILDING_ICONS[type];
     const cost = BUILDING_COSTS[type];
     return `${icon} ${type.charAt(0).toUpperCase() + type.slice(1)} ($${cost})`;
@@ -87,15 +103,25 @@ class Game {
 
   private prepareBuildingSelector(): void {
     const select = this.ui.getBuildingTypeSelect();
-    const buildingTypes = Object.keys(BUILDING_COSTS) as (keyof typeof BUILDING_COSTS)[];
-
     select.innerHTML = '';
-    buildingTypes.forEach((type) => {
+    this.availableBuildingTypes.forEach((type) => {
       const option = document.createElement('option');
       option.value = type;
       option.textContent = this.formatBuildingLabel(type);
       select.appendChild(option);
     });
+  }
+
+  private unlockRandomBuildingType(): BuildingType | null {
+    if (!this.lockedBuildingTypes.length) {
+      return null;
+    }
+
+    const index = Math.floor(Math.random() * this.lockedBuildingTypes.length);
+    const [unlocked] = this.lockedBuildingTypes.splice(index, 1);
+    this.availableBuildingTypes.push(unlocked);
+    this.prepareBuildingSelector();
+    return unlocked;
   }
 
   private setupBuilding(): void {
@@ -107,13 +133,13 @@ class Game {
     const select = this.ui.getBuildingTypeSelect();
 
     buildBtn.addEventListener('click', () => {
-      const selectedType = select.value as keyof typeof BUILDING_COSTS;
+      const selectedType = select.value as BuildingType;
       this.handleBuild(selectedType);
     });
   }
 
   private getLevelGoalMessage(): string {
-    return `Level ${this.currentLevel}: Build at least ${this.currentLevel} of every building type to advance.`;
+    return `Level ${this.currentLevel}: Build at least ${this.currentLevel} of each unlocked building type to advance.`;
   }
 
   private startLevel(): void {
@@ -130,18 +156,25 @@ class Game {
   }
 
   private isCurrentLevelComplete(): boolean {
-    const buildingTypes = Object.keys(BUILDING_COSTS) as (keyof typeof BUILDING_COSTS)[];
-    return buildingTypes.every((type) => this.gameState.getBuildingCount(type) >= this.currentLevel);
+    return this.availableBuildingTypes.every(
+      (type) => this.gameState.getBuildingCount(type) >= this.currentLevel
+    );
   }
 
   private advanceToNextLevel(): void {
     this.engine.stop();
     alert(`Great job! You completed Level ${this.currentLevel}.`);
     this.currentLevel += 1;
+    const unlocked = this.unlockRandomBuildingType();
+
+    if (unlocked) {
+      alert(`Level ${this.currentLevel} unlocked: ${unlocked.charAt(0).toUpperCase() + unlocked.slice(1)}!`);
+    }
+
     this.startLevel();
   }
 
-  private handleBuild(type: keyof typeof BUILDING_COSTS): void {
+  private handleBuild(type: BuildingType): void {
     // Create and place building first to ensure there is room
     const townView = this.ui.getTownView();
     const icon = BUILDING_ICONS[type];

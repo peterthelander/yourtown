@@ -139,6 +139,22 @@ export class GameEngine {
       destinationWeights.push({ type: 'cemetery', weight: ageGroup === 'elder' ? 1.4 : 0.35 });
     }
 
+    if ((ageGroup === 'adult' || ageGroup === 'elder') && (buildingCounts.restaurant || 0) > 0) {
+      destinationWeights.push({ type: 'restaurant', weight: hasHouses ? 2.2 : 1.6 });
+    }
+
+    if ((buildingCounts.church || 0) > 0) {
+      destinationWeights.push({ type: 'church', weight: ageGroup === 'elder' ? 1.8 : 1.1 });
+    }
+
+    if (ageGroup === 'adult' && (buildingCounts.bank || 0) > 0) {
+      destinationWeights.push({ type: 'bank', weight: hasHouses ? 2.1 : 1.5 });
+    }
+
+    if ((ageGroup === 'child' || ageGroup === 'adult') && (buildingCounts.museum || 0) > 0) {
+      destinationWeights.push({ type: 'museum', weight: hasHouses ? 1.9 : 1.3 });
+    }
+
     const nearEndOfLife = person.lifeSpanMs - person.ageMs <= GAME_CONFIG.CEMETERY_END_OF_LIFE_WINDOW_MS;
     if (nearEndOfLife && ageGroup === 'elder' && (buildingCounts.cemetery || 0) > 0) {
       person.currentDestinationType = 'cemetery';
