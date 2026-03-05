@@ -43,12 +43,31 @@ export class BuildingManager {
         // Houses are handled separately in game loop for growth
         break;
       case 'gym':
-        // Gym effects TBD
+        this.gameState.increasePopulationGrowthRate(0.03);
         break;
       case 'grocery':
+        this.gameState.increaseIncomePerSecond(0.15);
+        this.gameState.increasePopulationGrowthRate(0.01);
+        break;
       case 'hospital':
+        this.gameState.increasePopulationGrowthRate(0.04);
+        break;
       case 'cemetery':
-        // Effects handled in simulation behaviors for now
+        this.gameState.increasePopulationGrowthRate(0.01);
+        break;
+      case 'restaurant':
+        this.gameState.increaseIncomePerSecond(0.25);
+        this.gameState.increasePopulationGrowthRate(0.02);
+        break;
+      case 'church':
+        this.gameState.increasePopulationGrowthRate(0.03);
+        break;
+      case 'bank':
+        this.gameState.increaseIncomePerSecond(0.7);
+        break;
+      case 'museum':
+        this.gameState.increaseIncomePerSecond(0.2);
+        this.gameState.increasePopulationGrowthRate(0.03);
         break;
     }
   }

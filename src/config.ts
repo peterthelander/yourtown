@@ -5,10 +5,14 @@ export const BUILDING_COSTS: Record<BuildingType, number> = {
   library: 90,
   workplace: 80,
   school: 100,
-  gym: 70,
+  gym: 110,
   grocery: 60,
-  hospital: 120,
-  cemetery: 40,
+  hospital: 180,
+  cemetery: 70,
+  restaurant: 130,
+  church: 140,
+  bank: 220,
+  museum: 260,
 };
 
 export const BUILDING_ICONS: Record<BuildingType, string> = {
@@ -20,6 +24,10 @@ export const BUILDING_ICONS: Record<BuildingType, string> = {
   grocery: '🛒',
   hospital: '🏥',
   cemetery: '🪦',
+  restaurant: '🍽️',
+  church: '⛪',
+  bank: '🏦',
+  museum: '🏛️',
 };
 
 export const STORY_FRAMES: StoryFrame[] = [
