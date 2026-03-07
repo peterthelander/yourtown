@@ -4,7 +4,7 @@ import { UI } from './ui';
 import { StoryManager } from './story';
 import { GameEngine } from './gameLoop';
 import { BUILDING_COSTS, BUILDING_ICONS, GAME_CONFIG } from './config';
-import { BuildingType } from './types';
+import { BuildingSnapshot, BuildingType, GameState } from './types';
 
 const LEVEL_ONE_BUILDINGS: BuildingType[] = ['house', 'workplace', 'grocery', 'library', 'school'];
 const UNLOCKABLE_BUILDINGS: BuildingType[] = [
@@ -17,6 +17,17 @@ const UNLOCKABLE_BUILDINGS: BuildingType[] = [
   'museum',
 ];
 
+interface SavePayload {
+  username: string;
+  score: number;
+  level: number;
+  buildings: BuildingSnapshot[];
+  money: number;
+  population: number;
+  incomePerSecond: number;
+  populationGrowthRate: number;
+}
+
 class Game {
   private gameState: GameStateManager;
   private buildingManager: BuildingManager;
@@ -26,19 +37,25 @@ class Game {
   private currentLevel: number;
   private availableBuildingTypes: BuildingType[];
   private lockedBuildingTypes: BuildingType[];
+  private username = '';
+  private lastAutoSaveMs = 0;
+  private loadedProgress: SavePayload | null = null;
 
   constructor() {
     this.gameState = new GameStateManager();
     this.buildingManager = new BuildingManager(this.gameState);
     this.ui = new UI();
     this.storyManager = new StoryManager();
-    this.engine = new GameEngine(this.gameState, this.buildingManager, this.ui);
+    this.engine = new GameEngine(this.gameState, this.buildingManager, this.ui, (state) => this.handleTick(state));
     this.currentLevel = 1;
     this.availableBuildingTypes = [...LEVEL_ONE_BUILDINGS];
     this.lockedBuildingTypes = [...UNLOCKABLE_BUILDINGS];
   }
 
-  init(): void {
+  async init(): Promise<void> {
+    this.username = await this.ensureUsername();
+    await this.loadProgress();
+
     this.setupStory();
     this.setupBuilding();
 
@@ -51,6 +68,84 @@ class Game {
     }
 
     this.showStory();
+  }
+
+  private async ensureUsername(): Promise<string> {
+    const storageKey = 'yourtown_user';
+    const existing = localStorage.getItem(storageKey);
+
+    if (existing) {
+      return existing;
+    }
+
+    const overlay = document.createElement('div');
+    overlay.className = 'username-overlay';
+
+    const card = document.createElement('div');
+    card.className = 'username-card';
+
+    const title = document.createElement('h2');
+    title.textContent = 'Welcome to Your Town';
+
+    const subtitle = document.createElement('p');
+    subtitle.textContent = 'Pick a username to save your progress and appear on the leaderboard.';
+
+    const input = document.createElement('input');
+    input.placeholder = 'Mayor name';
+    input.maxLength = 24;
+    input.autocomplete = 'username';
+
+    const button = document.createElement('button');
+    button.textContent = 'Start Building';
+
+    const errorText = document.createElement('p');
+    errorText.className = 'username-error';
+
+    card.append(title, subtitle, input, button, errorText);
+    overlay.appendChild(card);
+    document.body.appendChild(overlay);
+
+    return await new Promise<string>((resolve) => {
+      const submit = () => {
+        const value = input.value.trim();
+        if (!value) {
+          errorText.textContent = 'Username is required.';
+          return;
+        }
+
+        localStorage.setItem(storageKey, value);
+        overlay.remove();
+        resolve(value);
+      };
+
+      button.addEventListener('click', submit);
+      input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          submit();
+        }
+      });
+
+      input.focus();
+    });
+  }
+
+  private async loadProgress(): Promise<void> {
+    try {
+      const response = await fetch(`/api/save-progress?username=${encodeURIComponent(this.username)}`);
+      if (!response.ok) {
+        return;
+      }
+
+      const data = (await response.json()) as { progress?: SavePayload };
+      if (!data.progress) {
+        return;
+      }
+
+      this.loadedProgress = data.progress;
+      this.currentLevel = Math.max(1, Math.floor(data.progress.level || 1));
+    } catch {
+      // no-op: game should still boot offline/local dev without API routes
+    }
   }
 
   private setupStory(): void {
@@ -92,7 +187,8 @@ class Game {
   private startGame(): void {
     this.ui.showGame();
     this.setupBuildAction();
-    this.startLevel();
+    this.startLevel(this.loadedProgress);
+    this.loadedProgress = null;
   }
 
   private formatBuildingLabel(type: BuildingType): string {
@@ -142,18 +238,38 @@ class Game {
     return `Level ${this.currentLevel}: Build at least ${this.currentLevel} of each unlocked building type to advance.`;
   }
 
-  private startLevel(): void {
+  private startLevel(savedProgress?: SavePayload | null): void {
     this.ui.getTownView().innerHTML = '';
     this.gameState = new GameStateManager();
     this.buildingManager = new BuildingManager(this.gameState);
-    this.engine = new GameEngine(this.gameState, this.buildingManager, this.ui);
+    this.engine = new GameEngine(this.gameState, this.buildingManager, this.ui, (state) => this.handleTick(state));
+
+    if (savedProgress) {
+      this.gameState.loadSnapshot({
+        money: savedProgress.money,
+        population: savedProgress.population,
+        incomePerSecond: savedProgress.incomePerSecond,
+        populationGrowthRate: savedProgress.populationGrowthRate,
+      });
+
+      savedProgress.buildings.forEach((building) => {
+        const buildingElement = this.ui.addBuildingElement(building.type, BUILDING_ICONS[building.type]);
+        buildingElement.style.left = `${building.x}px`;
+        buildingElement.style.top = `${building.y}px`;
+        this.ui.getTownView().appendChild(buildingElement);
+        this.gameState.addBuilding(building.type, building.x, building.y, buildingElement);
+      });
+    }
+
     this.engine.start();
     this.ui.updateStats(this.gameState.getState());
     this.ui.updateLevel(this.currentLevel);
 
-    alert(
-      `${this.getLevelGoalMessage()}\n\nYou start this level from scratch with fresh money, population, and no buildings.`
-    );
+    if (!savedProgress) {
+      alert(
+        `${this.getLevelGoalMessage()}\n\nYou start this level from scratch with fresh money, population, and no buildings.`
+      );
+    }
   }
 
   private isCurrentLevelComplete(): boolean {
@@ -173,6 +289,7 @@ class Game {
     }
 
     this.startLevel();
+    void this.saveProgress(true);
   }
 
   private handleBuild(type: BuildingType): void {
@@ -203,8 +320,59 @@ class Game {
     // Update UI immediately
     this.ui.updateStats(this.gameState.getState());
 
+    void this.saveProgress(true);
+
     if (this.isCurrentLevelComplete()) {
       this.advanceToNextLevel();
+    }
+  }
+
+  private buildSavePayload(state: GameState): SavePayload {
+    return {
+      username: this.username,
+      score: this.calculateScore(state),
+      level: this.currentLevel,
+      buildings: state.buildings.map((building) => ({
+        type: building.type,
+        x: building.x,
+        y: building.y,
+      })),
+      money: state.money,
+      population: state.population,
+      incomePerSecond: state.incomePerSecond,
+      populationGrowthRate: state.populationGrowthRate,
+    };
+  }
+
+  private calculateScore(state: GameState): number {
+    return Math.floor(state.money + state.population * 10 + state.buildings.length * 25 + this.currentLevel * 100);
+  }
+
+  private handleTick(state: GameState): void {
+    void this.saveProgress(false, state);
+  }
+
+  private async saveProgress(force = false, stateOverride?: GameState): Promise<void> {
+    const now = Date.now();
+    const minIntervalMs = 5000;
+
+    if (!force && now - this.lastAutoSaveMs < minIntervalMs) {
+      return;
+    }
+
+    const state = stateOverride ?? this.gameState.getState();
+    this.lastAutoSaveMs = now;
+
+    try {
+      await fetch('/api/save-progress', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(this.buildSavePayload(state)),
+      });
+    } catch {
+      // no-op
     }
   }
 }
@@ -212,5 +380,5 @@ class Game {
 // Initialize game when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   const game = new Game();
-  game.init();
+  void game.init();
 });
