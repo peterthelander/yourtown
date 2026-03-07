@@ -2,7 +2,7 @@ import { GameStateManager } from './state';
 import { BuildingManager } from './buildings';
 import { UI } from './ui';
 import { GAME_CONFIG } from './config';
-import { Building, BuildingType, Person } from './types';
+import { Building, BuildingType, GameState, Person } from './types';
 
 type AgeGroup = 'baby' | 'child' | 'adult' | 'elder';
 
@@ -21,7 +21,8 @@ export class GameEngine {
   constructor(
     private gameState: GameStateManager,
     private buildingManager: BuildingManager,
-    private ui: UI
+    private ui: UI,
+    private onTick?: (state: GameState) => void
   ) {}
 
   start(): void {
@@ -299,6 +300,7 @@ export class GameEngine {
 
       // Update UI
       this.ui.updateStats(state);
+      this.onTick?.(state);
 
       this.gameLoopTimeoutId = window.setTimeout(gameLoop, GAME_CONFIG.GAME_LOOP_INTERVAL);
     };

@@ -1,6 +1,13 @@
 import { GameState, BuildingType, Person } from './types';
 import { GAME_CONFIG } from './config';
 
+interface StateSnapshot {
+  money: number;
+  population: number;
+  incomePerSecond: number;
+  populationGrowthRate: number;
+}
+
 export class GameStateManager {
   private state: GameState;
 
@@ -18,6 +25,13 @@ export class GameStateManager {
 
   getState(): GameState {
     return this.state;
+  }
+
+  loadSnapshot(snapshot: StateSnapshot): void {
+    this.state.money = snapshot.money;
+    this.state.population = snapshot.population;
+    this.state.incomePerSecond = snapshot.incomePerSecond;
+    this.state.populationGrowthRate = snapshot.populationGrowthRate;
   }
 
   addMoney(amount: number): void {

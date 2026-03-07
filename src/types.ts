@@ -1,7 +1,10 @@
-export interface Building {
+export interface BuildingSnapshot {
   type: BuildingType;
   x: number;
   y: number;
+}
+
+export interface Building extends BuildingSnapshot {
   element: HTMLElement;
 }
 
