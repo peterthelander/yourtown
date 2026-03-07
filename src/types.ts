@@ -18,13 +18,6 @@ export interface Person {
   currentDestinationType?: BuildingType | 'wander';
 }
 
-export interface Car {
-  x: number;
-  y: number;
-  element: HTMLElement;
-  currentDestinationType?: 'road' | 'highway' | 'wander';
-}
-
 export interface StoryFrame {
   img: string;
   text: string;
@@ -36,16 +29,11 @@ export interface GameState {
   buildings: Building[];
   buildingCounts: Record<BuildingType, number>;
   people: Person[];
-  cars: Car[];
   incomePerSecond: number;
   populationGrowthRate: number;
 }
 
 export type BuildingType =
-  | 'sidewalk'
-  | 'street'
-  | 'road'
-  | 'highway'
   | 'house'
   | 'library'
   | 'workplace'

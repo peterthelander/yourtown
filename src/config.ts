@@ -1,10 +1,6 @@
 import { BuildingType, StoryFrame } from './types';
 
 export const BUILDING_COSTS: Record<BuildingType, number> = {
-  sidewalk: 20,
-  street: 30,
-  road: 45,
-  highway: 70,
   house: 50,
   library: 90,
   workplace: 80,
@@ -20,10 +16,6 @@ export const BUILDING_COSTS: Record<BuildingType, number> = {
 };
 
 export const BUILDING_ICONS: Record<BuildingType, string> = {
-  sidewalk: '🧱',
-  street: '🛣️',
-  road: '🛤️',
-  highway: '🛣️',
   house: '🏠',
   library: '📚',
   workplace: '🏭',

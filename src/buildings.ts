@@ -32,12 +32,6 @@ export class BuildingManager {
 
   private applyBuildingEffects(type: BuildingType): void {
     switch (type) {
-      case 'sidewalk':
-      case 'street':
-      case 'road':
-      case 'highway':
-        // Transportation buildings affect movement behavior, not economy stats directly.
-        break;
       case 'workplace':
         this.gameState.increaseIncomePerSecond(0.5);
         break;
