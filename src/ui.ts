@@ -25,6 +25,29 @@ const PERSON_EMOJIS = {
   },
 } as const;
 
+
+const SKIN_TONE_MODIFIERS = {
+  light: '\u{1F3FB}',
+  'medium-light': '\u{1F3FC}',
+  medium: '\u{1F3FD}',
+  'medium-dark': '\u{1F3FE}',
+  dark: '\u{1F3FF}',
+} as const;
+
+function applySkinTone(emoji: string, skinTone: keyof typeof SKIN_TONE_MODIFIERS): string {
+  if (!emoji.includes('🧍') && !emoji.includes('🚶') && !emoji.includes('🧑') && !emoji.includes('👨') && !emoji.includes('👩')) {
+    return emoji;
+  }
+
+  const modifier = SKIN_TONE_MODIFIERS[skinTone];
+  if (emoji.includes('‍')) {
+    const [base, ...rest] = emoji.split('‍');
+    return `${base}${modifier}‍${rest.join('‍')}`;
+  }
+
+  return `${emoji}${modifier}`;
+}
+
 const EMOJI_SCALES = {
   baby: 0.5,
   child: 0.75,
@@ -47,10 +70,11 @@ function getEmojiStyle(age: keyof typeof PERSON_EMOJIS): {
 function getGenderedEmoji(
   emojiSet: { default: string; male: string; female: string },
   gender: Person['gender'],
+  skinTone: Person['skinTone'],
 ): string {
-  if (gender === 'male') return emojiSet.male;
-  if (gender === 'female') return emojiSet.female;
-  return emojiSet.default;
+  if (gender === 'male') return applySkinTone(emojiSet.male, skinTone);
+  if (gender === 'female') return applySkinTone(emojiSet.female, skinTone);
+  return applySkinTone(emojiSet.default, skinTone);
 }
 
 export class UI {
@@ -122,24 +146,24 @@ export class UI {
     }
 
     if (person.ageMs < GAME_CONFIG.BABY_STAGE_MS) {
-      person.element.textContent = getGenderedEmoji(PERSON_EMOJIS.baby, person.gender);
+      person.element.textContent = getGenderedEmoji(PERSON_EMOJIS.baby, person.gender, person.skinTone);
       Object.assign(person.element.style, getEmojiStyle('baby'));
       return;
     }
 
     if (person.ageMs < GAME_CONFIG.CHILD_STAGE_MS) {
-      person.element.textContent = getGenderedEmoji(PERSON_EMOJIS.child, person.gender);
+      person.element.textContent = getGenderedEmoji(PERSON_EMOJIS.child, person.gender, person.skinTone);
       Object.assign(person.element.style, getEmojiStyle('child'));
       return;
     }
 
     if (person.ageMs < GAME_CONFIG.ADULT_STAGE_MS) {
-      person.element.textContent = getGenderedEmoji(PERSON_EMOJIS.adult, person.gender);
+      person.element.textContent = getGenderedEmoji(PERSON_EMOJIS.adult, person.gender, person.skinTone);
       Object.assign(person.element.style, getEmojiStyle('adult'));
       return;
     }
 
-    person.element.textContent = getGenderedEmoji(PERSON_EMOJIS.elder, person.gender);
+    person.element.textContent = getGenderedEmoji(PERSON_EMOJIS.elder, person.gender, person.skinTone);
     Object.assign(person.element.style, getEmojiStyle('elder'));
   }
 
