@@ -150,7 +150,7 @@ class Game {
   }
 
   private getLevelGoalMessage(): string {
-    return `Level ${this.currentLevel}: Build at least ${this.currentLevel} of each unlocked building type to advance.`;
+    return `Level ${this.currentLevel}: Build at least ${this.currentLevel} of each core unlocked building type to advance (transport infrastructure is optional).`;
   }
 
   private startLevel(): void {
@@ -170,9 +170,7 @@ class Game {
   private isCurrentLevelComplete(): boolean {
     return this.availableBuildingTypes
       .filter((type) => !LEVEL_OPTIONAL_INFRASTRUCTURE.includes(type))
-      .every(
-      (type) => this.gameState.getBuildingCount(type) >= this.currentLevel
-    );
+      .every((type) => this.gameState.getBuildingCount(type) >= this.currentLevel);
   }
 
   private advanceToNextLevel(): void {

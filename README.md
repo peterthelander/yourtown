@@ -36,7 +36,11 @@ dist/
   - **Workplace**: Generates passive income
   - **School/Library**: Boosts population growth further
   - **Gym, Grocery**: Placeholder for future features
+* Transport infrastructure:
+  - **Sidewalks/Streets** help pedestrians route through town
+  - **Roads/Highways** support car traffic (vehicles)
 * Animated "people" wandering around the town
+* Animated vehicles using roads/highways
 * Real-time income and population growth
 
 ## Development Setup
