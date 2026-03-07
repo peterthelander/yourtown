@@ -32,7 +32,7 @@ class Game {
     this.buildingManager = new BuildingManager(this.gameState);
     this.ui = new UI();
     this.storyManager = new StoryManager();
-    this.engine = new GameEngine(this.gameState, this.buildingManager, this.ui);
+    this.engine = new GameEngine(this.gameState, this.buildingManager, this.ui, () => this.handleAllPeopleDead());
     this.currentLevel = 1;
     this.availableBuildingTypes = [...LEVEL_ONE_BUILDINGS];
     this.lockedBuildingTypes = [...UNLOCKABLE_BUILDINGS];
@@ -146,7 +146,7 @@ class Game {
     this.ui.getTownView().innerHTML = '';
     this.gameState = new GameStateManager();
     this.buildingManager = new BuildingManager(this.gameState);
-    this.engine = new GameEngine(this.gameState, this.buildingManager, this.ui);
+    this.engine = new GameEngine(this.gameState, this.buildingManager, this.ui, () => this.handleAllPeopleDead());
     this.engine.start();
     this.ui.updateStats(this.gameState.getState());
     this.ui.updateLevel(this.currentLevel);
@@ -172,6 +172,12 @@ class Game {
       alert(`Level ${this.currentLevel} unlocked: ${unlocked.charAt(0).toUpperCase() + unlocked.slice(1)}!`);
     }
 
+    this.startLevel();
+  }
+
+
+  private handleAllPeopleDead(): void {
+    alert('Game over: everyone in your town has died.');
     this.startLevel();
   }
 

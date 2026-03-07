@@ -17,14 +17,17 @@ function getRandomSkinTone(): (typeof SKIN_TONES)[number] {
 export class GameEngine {
   private animationTimeoutId?: number;
   private gameLoopTimeoutId?: number;
+  private hasTriggeredGameOver = false;
 
   constructor(
     private gameState: GameStateManager,
     private buildingManager: BuildingManager,
-    private ui: UI
+    private ui: UI,
+    private onAllPeopleDead?: () => void
   ) {}
 
   start(): void {
+    this.hasTriggeredGameOver = false;
     this.spawnInitialPeople();
     this.startPeopleAnimation();
     this.startGameLoop();
@@ -222,6 +225,12 @@ export class GameEngine {
             person.element.remove();
             this.gameState.removePerson(person);
             this.gameState.addPopulation(-1);
+
+            if (!this.gameState.getPeople().length && !this.hasTriggeredGameOver) {
+              this.hasTriggeredGameOver = true;
+              this.stop();
+              this.onAllPeopleDead?.();
+            }
           }
           return;
         }
