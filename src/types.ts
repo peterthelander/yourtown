@@ -17,6 +17,13 @@ export interface Person {
   currentDestinationType?: BuildingType | 'wander';
 }
 
+export interface Vehicle {
+  x: number;
+  y: number;
+  element: HTMLElement;
+  currentDestinationType?: 'road' | 'highway';
+}
+
 export interface StoryFrame {
   img: string;
   text: string;
@@ -44,4 +51,8 @@ export type BuildingType =
   | 'restaurant'
   | 'church'
   | 'bank'
-  | 'museum';
+  | 'museum'
+  | 'road'
+  | 'street'
+  | 'sidewalk'
+  | 'highway';
