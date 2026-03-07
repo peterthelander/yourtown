@@ -2,7 +2,7 @@ import { GameStateManager } from './state';
 import { BuildingManager } from './buildings';
 import { UI } from './ui';
 import { GAME_CONFIG } from './config';
-import { Building, BuildingType, Person } from './types';
+import { Building, BuildingType, Car, Person } from './types';
 
 type AgeGroup = 'baby' | 'child' | 'adult' | 'elder';
 
@@ -26,6 +26,7 @@ export class GameEngine {
 
   start(): void {
     this.spawnInitialPeople();
+    this.syncCarsWithTransportNetwork();
     this.startPeopleAnimation();
     this.startGameLoop();
   }
@@ -107,6 +108,35 @@ export class GameEngine {
     this.gameState.addPerson(person);
   }
 
+
+  private spawnCar(): void {
+    const townView = this.ui.getTownView();
+    const element = this.ui.addCarElement();
+    const car: Car = {
+      x: 0,
+      y: 0,
+      element,
+      currentDestinationType: 'wander',
+    };
+
+    this.ui.randomizePosition(element, townView);
+    car.x = parseFloat(element.style.left) || 0;
+    car.y = parseFloat(element.style.top) || 0;
+
+    townView.appendChild(element);
+    this.ui.updatePersonPosition(element, car.x, car.y);
+    this.gameState.addCar(car);
+  }
+
+  private syncCarsWithTransportNetwork(): void {
+    const buildingCounts = this.gameState.getState().buildingCounts;
+    const targetCars = Math.floor((buildingCounts.road || 0) / 2) + (buildingCounts.highway || 0);
+
+    while (this.gameState.getCars().length < targetCars) {
+      this.spawnCar();
+    }
+  }
+
   private maybeAssignDestination(person: Person): void {
     const ageGroup = this.getAgeGroup(person.ageMs);
     const buildingCounts = this.gameState.getState().buildingCounts;
@@ -122,6 +152,14 @@ export class GameEngine {
 
     if ((buildingCounts.library || 0) > 0) {
       destinationWeights.push({ type: 'library', weight: hasHouses ? 2.5 : 1.8 });
+    }
+
+    if ((buildingCounts.sidewalk || 0) > 0) {
+      destinationWeights.push({ type: 'sidewalk', weight: 3.5 });
+    }
+
+    if ((buildingCounts.street || 0) > 0) {
+      destinationWeights.push({ type: 'street', weight: 2.7 });
     }
 
     if (ageGroup === 'adult' && (buildingCounts.workplace || 0) > 0) {
@@ -271,6 +309,41 @@ export class GameEngine {
         person.y = y;
       });
 
+
+      const cars = this.gameState.getCars();
+      cars.forEach((car) => {
+        const rect = townView.getBoundingClientRect();
+        const carWidth = car.element.offsetWidth || 24;
+        const carHeight = car.element.offsetHeight || 24;
+
+        const shouldTargetHighway = this.gameState.getBuildingCount('highway') > 0 && Math.random() < 0.55;
+        const destinationType: 'road' | 'highway' = shouldTargetHighway ? 'highway' : 'road';
+        const targetBuilding = this.getRandomBuilding(destinationType) ?? this.getRandomBuilding('road');
+
+        let targetX = Math.random() * Math.max(1, rect.width - carWidth);
+        let targetY = Math.random() * Math.max(1, rect.height - carHeight);
+
+        if (targetBuilding) {
+          targetX = targetBuilding.x + (Math.random() - 0.5) * 20;
+          targetY = targetBuilding.y + (Math.random() - 0.5) * 20;
+        }
+
+        const toTargetX = targetX - car.x;
+        const toTargetY = targetY - car.y;
+        const distance = Math.hypot(toTargetX, toTargetY) || 1;
+
+        const speed = destinationType === 'highway' ? 22 : 14;
+        let x = car.x + (toTargetX / distance) * speed;
+        let y = car.y + (toTargetY / distance) * speed;
+
+        x = Math.max(0, Math.min(rect.width - carWidth, x));
+        y = Math.max(0, Math.min(rect.height - carHeight, y));
+
+        this.ui.updatePersonPosition(car.element, x, y);
+        car.x = x;
+        car.y = y;
+      });
+
       this.animationTimeoutId = window.setTimeout(animationLoop, GAME_CONFIG.ANIMATION_INTERVAL);
     };
 
@@ -290,6 +363,8 @@ export class GameEngine {
       const growthThisFrame =
         (houseModifier * state.populationGrowthRate) / (1000 / GAME_CONFIG.GAME_LOOP_INTERVAL);
       this.gameState.addPopulation(growthThisFrame);
+
+      this.syncCarsWithTransportNetwork();
 
       // Spawn new people visually if population grew
       const people = this.gameState.getPeople();

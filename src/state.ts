@@ -1,4 +1,4 @@
-import { GameState, BuildingType, Person } from './types';
+import { GameState, BuildingType, Person, Car } from './types';
 import { GAME_CONFIG } from './config';
 
 export class GameStateManager {
@@ -11,6 +11,7 @@ export class GameStateManager {
       buildings: [],
       buildingCounts: {} as Record<BuildingType, number>,
       people: [],
+      cars: [],
       incomePerSecond: GAME_CONFIG.BASE_INCOME_PER_SECOND,
       populationGrowthRate: GAME_CONFIG.BASE_POPULATION_GROWTH_RATE,
     };
@@ -56,6 +57,14 @@ export class GameStateManager {
     if (index >= 0) {
       this.state.people.splice(index, 1);
     }
+  }
+
+  addCar(car: Car): void {
+    this.state.cars.push(car);
+  }
+
+  getCars() {
+    return this.state.cars;
   }
 
   getPeople() {
