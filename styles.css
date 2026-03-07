@@ -148,3 +148,15 @@ footer select {
     font-weight: bold;
     white-space: nowrap;
 }
+
+.car {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    line-height: 1;
+    user-select: none;
+}

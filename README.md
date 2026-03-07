@@ -37,6 +37,8 @@ dist/
   - **School/Library**: Boosts population growth further
   - **Gym, Grocery**: Placeholder for future features
 * Animated "people" wandering around the town
+* Transport network options: sidewalks, streets, roads, and highways
+* Cars spawn and travel between roads/highways while people prefer sidewalks/streets
 * Real-time income and population growth
 
 ## Development Setup
@@ -89,7 +91,7 @@ npm run build        # Compile TypeScript to JavaScript bundle
 
 - [ ] Add story artwork (cartoony illustrations)
 - [ ] Building visual differentiation (colors, icons)
-- [ ] Structured/grid-based placement & roads
+- [ ] Structured/grid-based placement
 - [ ] More building effects & balancing
 - [ ] Game events/challenges
 - [ ] Mobile responsiveness

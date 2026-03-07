@@ -6,7 +6,7 @@ import { GameEngine } from './gameLoop';
 import { BUILDING_COSTS, BUILDING_ICONS, GAME_CONFIG } from './config';
 import { BuildingType } from './types';
 
-const LEVEL_ONE_BUILDINGS: BuildingType[] = ['house', 'workplace', 'grocery', 'library', 'school'];
+const LEVEL_ONE_BUILDINGS: BuildingType[] = ['sidewalk', 'street', 'road', 'highway', 'house', 'workplace', 'grocery', 'library', 'school'];
 const UNLOCKABLE_BUILDINGS: BuildingType[] = [
   'gym',
   'hospital',
