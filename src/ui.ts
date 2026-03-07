@@ -114,6 +114,13 @@ export class UI {
     return div;
   }
 
+  addVehicleElement(): HTMLElement {
+    const div = document.createElement('div');
+    div.className = 'vehicle';
+    div.textContent = '🚗';
+    return div;
+  }
+
   updatePersonAppearance(person: Person): void {
     if (person.isDying) {
       person.element.textContent = PERSON_EMOJIS.dying;
@@ -217,6 +224,11 @@ export class UI {
   }
 
   updatePersonPosition(element: HTMLElement, x: number, y: number): void {
+    element.style.left = x + 'px';
+    element.style.top = y + 'px';
+  }
+
+  updateVehiclePosition(element: HTMLElement, x: number, y: number): void {
     element.style.left = x + 'px';
     element.style.top = y + 'px';
   }
