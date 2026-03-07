@@ -81,6 +81,12 @@ header {
     white-space: nowrap;
 }
 
+#username {
+    max-width: 11ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 #town-view {
     flex: 1;
     position: relative;
