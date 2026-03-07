@@ -54,6 +54,7 @@ class Game {
 
   async init(): Promise<void> {
     this.username = await this.ensureUsername();
+    this.ui.updateUsername(this.username);
     await this.loadProgress();
 
     this.setupStory();

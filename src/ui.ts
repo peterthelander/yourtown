@@ -81,6 +81,7 @@ export class UI {
   private moneyElement: HTMLElement;
   private populationElement: HTMLElement;
   private levelElement: HTMLElement;
+  private usernameElement: HTMLElement;
   private storyContainer: HTMLElement;
   private gameContainer: HTMLElement;
   private townView: HTMLElement;
@@ -89,6 +90,7 @@ export class UI {
     this.moneyElement = this.getElement('money');
     this.populationElement = this.getElement('population');
     this.levelElement = this.getElement('level');
+    this.usernameElement = this.getElement('username');
     this.storyContainer = this.getElement('story-container');
     this.gameContainer = this.getElement('game-container');
     this.townView = this.getElement('town-view');
@@ -107,6 +109,11 @@ export class UI {
 
   updateLevel(level: number): void {
     this.levelElement.textContent = `Level ${level}`;
+  }
+
+  updateUsername(username: string): void {
+    this.usernameElement.textContent = `Mayor: ${username}`;
+    this.usernameElement.title = username;
   }
 
   showStory(): void {
