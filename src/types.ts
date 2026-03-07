@@ -11,6 +11,7 @@ export interface Person {
   element: HTMLElement;
   ageMs: number;
   gender: 'male' | 'female';
+  skinTone: 'light' | 'medium-light' | 'medium' | 'medium-dark' | 'dark';
   lifeSpanMs: number;
   isDying: boolean;
   deathTimerMs: number;

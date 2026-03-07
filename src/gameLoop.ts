@@ -6,6 +6,14 @@ import { Building, BuildingType, Person } from './types';
 
 type AgeGroup = 'baby' | 'child' | 'adult' | 'elder';
 
+
+const SKIN_TONES = ['light', 'medium-light', 'medium', 'medium-dark', 'dark'] as const;
+
+function getRandomSkinTone(): (typeof SKIN_TONES)[number] {
+  return SKIN_TONES[Math.floor(Math.random() * SKIN_TONES.length)];
+}
+
+
 export class GameEngine {
   private animationTimeoutId?: number;
   private gameLoopTimeoutId?: number;
@@ -76,6 +84,7 @@ export class GameEngine {
       element,
       ageMs: isInitialPopulation ? Math.random() * lifeSpanMs : 0,
       gender: Math.random() < 0.5 ? 'male' : 'female',
+      skinTone: getRandomSkinTone(),
       lifeSpanMs,
       isDying: false,
       deathTimerMs: 0,
