@@ -6,7 +6,17 @@ import { GameEngine } from './gameLoop';
 import { BUILDING_COSTS, BUILDING_ICONS, GAME_CONFIG } from './config';
 import { BuildingType } from './types';
 
-const LEVEL_ONE_BUILDINGS: BuildingType[] = ['house', 'workplace', 'grocery', 'library', 'school'];
+const LEVEL_ONE_BUILDINGS: BuildingType[] = [
+  'house',
+  'workplace',
+  'grocery',
+  'library',
+  'school',
+  'road',
+  'street',
+  'sidewalk',
+  'highway',
+];
 const UNLOCKABLE_BUILDINGS: BuildingType[] = [
   'gym',
   'hospital',
@@ -16,6 +26,7 @@ const UNLOCKABLE_BUILDINGS: BuildingType[] = [
   'bank',
   'museum',
 ];
+const LEVEL_OPTIONAL_INFRASTRUCTURE: BuildingType[] = ['road', 'street', 'sidewalk', 'highway'];
 
 class Game {
   private gameState: GameStateManager;
@@ -157,7 +168,9 @@ class Game {
   }
 
   private isCurrentLevelComplete(): boolean {
-    return this.availableBuildingTypes.every(
+    return this.availableBuildingTypes
+      .filter((type) => !LEVEL_OPTIONAL_INFRASTRUCTURE.includes(type))
+      .every(
       (type) => this.gameState.getBuildingCount(type) >= this.currentLevel
     );
   }
