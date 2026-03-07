@@ -2,13 +2,14 @@ import { GameStateManager } from './state';
 import { BuildingManager } from './buildings';
 import { UI } from './ui';
 import { GAME_CONFIG } from './config';
-import { Building, BuildingType, Person } from './types';
+import { Building, BuildingType, Person, Vehicle } from './types';
 
 type AgeGroup = 'baby' | 'child' | 'adult' | 'elder';
 
 export class GameEngine {
   private animationTimeoutId?: number;
   private gameLoopTimeoutId?: number;
+  private vehicles: Vehicle[] = [];
 
   constructor(
     private gameState: GameStateManager,
@@ -32,6 +33,9 @@ export class GameEngine {
       window.clearTimeout(this.gameLoopTimeoutId);
       this.gameLoopTimeoutId = undefined;
     }
+
+    this.vehicles.forEach((vehicle) => vehicle.element.remove());
+    this.vehicles = [];
   }
 
   private getAgeGroup(ageMs: number): AgeGroup {
@@ -98,6 +102,38 @@ export class GameEngine {
     this.gameState.addPerson(person);
   }
 
+  private spawnVehicle(): void {
+    const townView = this.ui.getTownView();
+    const element = this.ui.addVehicleElement();
+    townView.appendChild(element);
+
+    this.ui.randomizePosition(element, townView);
+
+    const vehicle: Vehicle = {
+      x: parseFloat(element.style.left) || 0,
+      y: parseFloat(element.style.top) || 0,
+      element,
+      currentDestinationType: 'road',
+    };
+
+    this.vehicles.push(vehicle);
+    this.ui.updateVehiclePosition(element, vehicle.x, vehicle.y);
+  }
+
+  private syncVehiclesToInfrastructure(): void {
+    const { road = 0, highway = 0 } = this.gameState.getState().buildingCounts;
+    const targetVehicles = Math.min(16, road * 2 + highway * 3);
+
+    while (this.vehicles.length < targetVehicles) {
+      this.spawnVehicle();
+    }
+
+    while (this.vehicles.length > targetVehicles) {
+      const vehicle = this.vehicles.pop();
+      vehicle?.element.remove();
+    }
+  }
+
   private maybeAssignDestination(person: Person): void {
     const ageGroup = this.getAgeGroup(person.ageMs);
     const buildingCounts = this.gameState.getState().buildingCounts;
@@ -155,6 +191,14 @@ export class GameEngine {
       destinationWeights.push({ type: 'museum', weight: hasHouses ? 1.9 : 1.3 });
     }
 
+    if ((buildingCounts.sidewalk || 0) > 0) {
+      destinationWeights.push({ type: 'sidewalk', weight: 4.5 });
+    }
+
+    if ((buildingCounts.street || 0) > 0) {
+      destinationWeights.push({ type: 'street', weight: 3.2 });
+    }
+
     const nearEndOfLife = person.lifeSpanMs - person.ageMs <= GAME_CONFIG.CEMETERY_END_OF_LIFE_WINDOW_MS;
     if (nearEndOfLife && ageGroup === 'elder' && (buildingCounts.cemetery || 0) > 0) {
       person.currentDestinationType = 'cemetery';
@@ -178,10 +222,70 @@ export class GameEngine {
     person.currentDestinationType = 'wander';
   }
 
+  private maybeAssignVehicleDestination(vehicle: Vehicle): void {
+    const buildingCounts = this.gameState.getState().buildingCounts;
+    const options: Array<{ type: 'road' | 'highway'; weight: number }> = [];
+
+    if ((buildingCounts.road || 0) > 0) {
+      options.push({ type: 'road', weight: 2.4 });
+    }
+
+    if ((buildingCounts.highway || 0) > 0) {
+      options.push({ type: 'highway', weight: 3.2 });
+    }
+
+    if (!options.length) {
+      vehicle.currentDestinationType = undefined;
+      return;
+    }
+
+    const shouldPickNew = !vehicle.currentDestinationType || Math.random() < 0.4;
+    if (!shouldPickNew) return;
+
+    const totalWeight = options.reduce((sum, option) => sum + option.weight, 0);
+    let roll = Math.random() * totalWeight;
+
+    for (const option of options) {
+      roll -= option.weight;
+      if (roll <= 0) {
+        vehicle.currentDestinationType = option.type;
+        return;
+      }
+    }
+
+    vehicle.currentDestinationType = options[0].type;
+  }
+
   private getDestinationPoint(person: Person, townWidth: number, townHeight: number): { x: number; y: number } {
     const targetType = person.currentDestinationType;
 
     if (!targetType || targetType === 'wander') {
+      return {
+        x: Math.random() * townWidth,
+        y: Math.random() * townHeight,
+      };
+    }
+
+    const targetBuilding = this.getRandomBuilding(targetType);
+    if (!targetBuilding) {
+      return {
+        x: Math.random() * townWidth,
+        y: Math.random() * townHeight,
+      };
+    }
+
+    return {
+      x: targetBuilding.x + (Math.random() - 0.5) * 24,
+      y: targetBuilding.y + (Math.random() - 0.5) * 24,
+    };
+  }
+
+  private getDestinationPointForType(
+    targetType: BuildingType | undefined,
+    townWidth: number,
+    townHeight: number
+  ): { x: number; y: number } {
+    if (!targetType) {
       return {
         x: Math.random() * townWidth,
         y: Math.random() * townHeight,
@@ -262,6 +366,37 @@ export class GameEngine {
         person.y = y;
       });
 
+      const rect = townView.getBoundingClientRect();
+      this.vehicles.forEach((vehicle) => {
+        const vehicleWidth = vehicle.element.offsetWidth || 20;
+        const vehicleHeight = vehicle.element.offsetHeight || 20;
+
+        this.maybeAssignVehicleDestination(vehicle);
+
+        const target = this.getDestinationPointForType(
+          vehicle.currentDestinationType,
+          rect.width - vehicleWidth,
+          rect.height - vehicleHeight,
+        );
+
+        const toTargetX = target.x - vehicle.x;
+        const toTargetY = target.y - vehicle.y;
+        const distance = Math.hypot(toTargetX, toTargetY) || 1;
+
+        const dx = (toTargetX / distance) * 22 + (Math.random() - 0.5) * 5;
+        const dy = (toTargetY / distance) * 22 + (Math.random() - 0.5) * 5;
+
+        let x = vehicle.x + dx;
+        let y = vehicle.y + dy;
+
+        x = Math.max(0, Math.min(rect.width - vehicleWidth, x));
+        y = Math.max(0, Math.min(rect.height - vehicleHeight, y));
+
+        this.ui.updateVehiclePosition(vehicle.element, x, y);
+        vehicle.x = x;
+        vehicle.y = y;
+      });
+
       this.animationTimeoutId = window.setTimeout(animationLoop, GAME_CONFIG.ANIMATION_INTERVAL);
     };
 
@@ -287,6 +422,8 @@ export class GameEngine {
       while (people.length < Math.floor(state.population)) {
         this.spawnPerson();
       }
+
+      this.syncVehiclesToInfrastructure();
 
       // Update UI
       this.ui.updateStats(state);
