@@ -69,6 +69,14 @@ export class BuildingManager {
         this.gameState.increaseIncomePerSecond(0.2);
         this.gameState.increasePopulationGrowthRate(0.03);
         break;
+      case 'street':
+      case 'sidewalk':
+        this.gameState.increasePopulationGrowthRate(0.01);
+        break;
+      case 'road':
+      case 'highway':
+        this.gameState.increaseIncomePerSecond(0.05);
+        break;
     }
   }
 
