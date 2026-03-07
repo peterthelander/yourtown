@@ -7,12 +7,12 @@ export const BUILDING_COSTS: Record<BuildingType, number> = {
   school: 100,
   gym: 110,
   grocery: 60,
-  hospital: 180,
+  hospital: 170,
   cemetery: 70,
   restaurant: 130,
   church: 140,
   bank: 220,
-  museum: 260,
+  museum: 200,
 };
 
 export const BUILDING_ICONS: Record<BuildingType, string> = {
