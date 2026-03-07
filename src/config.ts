@@ -13,6 +13,10 @@ export const BUILDING_COSTS: Record<BuildingType, number> = {
   church: 140,
   bank: 220,
   museum: 260,
+  road: 15,
+  street: 10,
+  sidewalk: 12,
+  highway: 35,
 };
 
 export const BUILDING_ICONS: Record<BuildingType, string> = {
@@ -28,6 +32,10 @@ export const BUILDING_ICONS: Record<BuildingType, string> = {
   church: '⛪',
   bank: '🏦',
   museum: '🏛️',
+  road: '🛣️',
+  street: '🛤️',
+  sidewalk: '🚶',
+  highway: '🚧',
 };
 
 export const STORY_FRAMES: StoryFrame[] = [
@@ -46,6 +54,10 @@ export const STORY_FRAMES: StoryFrame[] = [
   {
     img: '',
     text: 'Build homes, schools, workplaces and more. Watch your population and funds.',
+  },
+  {
+    img: '',
+    text: 'Add streets and sidewalks for people, and roads or highways for car traffic.',
   },
   {
     img: '',
