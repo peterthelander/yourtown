@@ -81,10 +81,27 @@ header {
     white-space: nowrap;
 }
 
+#username-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.2em;
+    min-width: 0;
+}
+
 #username {
-    max-width: 11ch;
+    max-width: 15ch;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-align: center;
+}
+
+#edit-username {
+    font-size: 0.85em;
+    line-height: 1;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
 }
 
 #town-view {
