@@ -4,10 +4,14 @@
   "description": "A browser-based town building game",
   "scripts": {
     "build": "esbuild src/main.ts --bundle --outfile=dist/bundle.js && cp index.html dist/index.html && cp styles.css dist/styles.css",
-    "dev": "esbuild src/main.ts --bundle --outfile=dist/bundle.js --watch"
+    "watch": "esbuild src/main.ts --bundle --outfile=dist/bundle.js --watch",
+    "serve": "serve dist -l 3000",
+    "dev": "concurrently \"npm:watch\" \"npm:serve\""
   },
   "devDependencies": {
+    "concurrently": "^9.1.2",
     "esbuild": "^0.19.0",
+    "serve": "^14.2.4",
     "typescript": "^5.3.0"
   },
   "dependencies": {
