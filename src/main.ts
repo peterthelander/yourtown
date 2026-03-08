@@ -40,6 +40,7 @@ class Game {
   private username = '';
   private lastAutoSaveMs = 0;
   private loadedProgress: SavePayload | null = null;
+  private static readonly USERNAME_STORAGE_KEY = 'yourtown_user';
 
   constructor() {
     this.gameState = new GameStateManager();
@@ -55,6 +56,7 @@ class Game {
   async init(): Promise<void> {
     this.username = await this.ensureUsername();
     this.ui.updateUsername(this.username);
+    this.setupUsernameEditing();
     await this.loadProgress();
 
     this.setupStory();
@@ -72,8 +74,7 @@ class Game {
   }
 
   private async ensureUsername(): Promise<string> {
-    const storageKey = 'yourtown_user';
-    const existing = localStorage.getItem(storageKey);
+    const existing = localStorage.getItem(Game.USERNAME_STORAGE_KEY);
 
     if (existing) {
       return existing;
@@ -114,7 +115,7 @@ class Game {
           return;
         }
 
-        localStorage.setItem(storageKey, value);
+        localStorage.setItem(Game.USERNAME_STORAGE_KEY, value);
         overlay.remove();
         resolve(value);
       };
@@ -127,6 +128,28 @@ class Game {
       });
 
       input.focus();
+    });
+  }
+
+  private setupUsernameEditing(): void {
+    const editButton = this.ui.getEditUsernameButton();
+
+    editButton.addEventListener('click', () => {
+      const nextUsername = window.prompt('Choose a new mayor name:', this.username);
+      if (nextUsername === null) {
+        return;
+      }
+
+      const trimmedUsername = nextUsername.trim();
+      if (!trimmedUsername) {
+        window.alert('Username cannot be empty.');
+        return;
+      }
+
+      const normalizedUsername = trimmedUsername.slice(0, 24);
+      this.username = normalizedUsername;
+      localStorage.setItem(Game.USERNAME_STORAGE_KEY, normalizedUsername);
+      this.ui.updateUsername(normalizedUsername);
     });
   }
 

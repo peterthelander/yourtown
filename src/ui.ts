@@ -82,6 +82,7 @@ export class UI {
   private populationElement: HTMLElement;
   private levelElement: HTMLElement;
   private usernameElement: HTMLElement;
+  private editUsernameButton: HTMLButtonElement;
   private storyContainer: HTMLElement;
   private gameContainer: HTMLElement;
   private townView: HTMLElement;
@@ -91,6 +92,7 @@ export class UI {
     this.populationElement = this.getElement('population');
     this.levelElement = this.getElement('level');
     this.usernameElement = this.getElement('username');
+    this.editUsernameButton = this.getButtonElement('edit-username');
     this.storyContainer = this.getElement('story-container');
     this.gameContainer = this.getElement('game-container');
     this.townView = this.getElement('town-view');
@@ -99,6 +101,13 @@ export class UI {
   private getElement(id: string): HTMLElement {
     const el = document.getElementById(id);
     if (!el) throw new Error(`Element with id "${id}" not found`);
+    return el;
+  }
+
+
+  private getButtonElement(id: string): HTMLButtonElement {
+    const el = document.getElementById(id) as HTMLButtonElement | null;
+    if (!el) throw new Error(`Button with id "${id}" not found`);
     return el;
   }
 
@@ -114,6 +123,11 @@ export class UI {
   updateUsername(username: string): void {
     this.usernameElement.textContent = `Mayor: ${username}`;
     this.usernameElement.title = username;
+  }
+
+
+  getEditUsernameButton(): HTMLButtonElement {
+    return this.editUsernameButton;
   }
 
   showStory(): void {
