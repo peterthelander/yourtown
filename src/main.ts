@@ -135,21 +135,59 @@ class Game {
     const editButton = this.ui.getEditUsernameButton();
 
     editButton.addEventListener('click', () => {
-      const nextUsername = window.prompt('Choose a new mayor name:', this.username);
-      if (nextUsername === null) {
+      const usernameWrap = document.getElementById('username-wrap');
+      const usernameLabel = document.getElementById('username');
+      if (!usernameWrap || !usernameLabel || usernameWrap.querySelector('.username-editor')) {
         return;
       }
 
-      const trimmedUsername = nextUsername.trim();
-      if (!trimmedUsername) {
-        window.alert('Username cannot be empty.');
-        return;
-      }
+      const input = document.createElement('input');
+      input.className = 'username-editor';
+      input.value = this.username;
+      input.maxLength = 24;
+      input.setAttribute('aria-label', 'Edit username');
 
-      const normalizedUsername = trimmedUsername.slice(0, 24);
-      this.username = normalizedUsername;
-      localStorage.setItem(Game.USERNAME_STORAGE_KEY, normalizedUsername);
-      this.ui.updateUsername(normalizedUsername);
+      const commit = () => {
+        const trimmedUsername = input.value.trim();
+        if (!trimmedUsername) {
+          input.classList.add('invalid');
+          return;
+        }
+
+        const normalizedUsername = trimmedUsername.slice(0, 24);
+        this.username = normalizedUsername;
+        localStorage.setItem(Game.USERNAME_STORAGE_KEY, normalizedUsername);
+        this.ui.updateUsername(normalizedUsername);
+        input.remove();
+        editButton.hidden = false;
+      };
+
+      const cancel = () => {
+        input.remove();
+        editButton.hidden = false;
+      };
+
+      input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          commit();
+          return;
+        }
+
+        if (event.key === 'Escape') {
+          cancel();
+        }
+      });
+
+      input.addEventListener('input', () => {
+        input.classList.remove('invalid');
+      });
+
+      input.addEventListener('blur', commit);
+
+      editButton.hidden = true;
+      usernameLabel.insertAdjacentElement('afterend', input);
+      input.focus();
+      input.select();
     });
   }
 

@@ -104,6 +104,17 @@ header {
     cursor: pointer;
 }
 
+.username-editor {
+    font-size: 0.65em;
+    line-height: 1.2;
+    width: 12ch;
+    max-width: 45vw;
+}
+
+.username-editor.invalid {
+    outline: 2px solid #bb1a1a;
+}
+
 #town-view {
     flex: 1;
     position: relative;
