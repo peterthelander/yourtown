@@ -3,6 +3,12 @@ import { kv } from '@vercel/kv';
 const ACTIVITY_KEY = 'activity:lastSeen';
 
 export default async function handler(req: any, res: any) {
+  if (!process.env.KV_REST_API_URL) {
+    return res.status(500).json({
+      error: 'KV is not configured. Missing KV_REST_API_URL environment variable.',
+    });
+  }
+
   if (req.method !== 'GET') {
     res.setHeader('Allow', ['GET']);
     return res.status(405).json({ error: 'Method not allowed' });

@@ -23,6 +23,12 @@ function getPlayerKey(username: string): string {
 }
 
 export default async function handler(req: any, res: any) {
+  if (!process.env.KV_REST_API_URL) {
+    return res.status(500).json({
+      error: 'KV is not configured. Missing KV_REST_API_URL environment variable.',
+    });
+  }
+
   if (req.method === 'GET') {
     const username = req.query?.username;
     if (!username || typeof username !== 'string') {
