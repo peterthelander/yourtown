@@ -148,11 +148,17 @@ class Game {
       input.setAttribute('aria-label', 'Edit username');
 
       const commit = () => {
+        if (!input.isConnected) {
+          return;
+        }
+
         const trimmedUsername = input.value.trim();
         if (!trimmedUsername) {
           input.classList.add('invalid');
           return;
         }
+
+        input.removeEventListener('blur', commit);
 
         const normalizedUsername = trimmedUsername.slice(0, 24);
         this.username = normalizedUsername;
@@ -163,6 +169,10 @@ class Game {
       };
 
       const cancel = () => {
+        if (!input.isConnected) {
+          return;
+        }
+
         input.remove();
         editButton.hidden = false;
       };
