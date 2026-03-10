@@ -22,6 +22,7 @@
                     <button id="edit-username" type="button" aria-label="Edit username" title="Edit username">✏️</button>
                 </div>
                 <span id="money">$100</span>
+                <span id="gems">💎 0</span>
                 <span id="population">20 ppl</span>
             </div>
         </header>
@@ -29,9 +30,24 @@
             <!-- buildings will appear here -->
         </div>
         <footer>
+            <button id="store-button" aria-label="Open Store">S</button>
             <select id="building-type" aria-label="Building type"></select>
             <button id="build-button">Build</button>
         </footer>
+
+        <div id="store-modal" class="hidden" role="dialog" aria-modal="true" aria-label="Town store">
+            <div class="store-panel">
+                <div class="store-head">
+                    <h2>Town Store</h2>
+                    <button id="store-close" aria-label="Close store">✕</button>
+                </div>
+                <div class="store-tabs">
+                    <button id="store-buildings-tab" class="active">Buildings</button>
+                    <button id="store-gems-tab">💎 Gems</button>
+                </div>
+                <div id="store-content"></div>
+            </div>
+        </div>
     </div>
 
     <script src="bundle.js"></script>

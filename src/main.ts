@@ -23,10 +23,25 @@ interface SavePayload {
   level: number;
   buildings: BuildingSnapshot[];
   money: number;
+  gems: number;
   population: number;
   incomePerSecond: number;
   populationGrowthRate: number;
 }
+
+interface GemPack {
+  id: string;
+  label: string;
+  gems: number;
+  priceUsd: number;
+}
+
+const GEM_PACKS: GemPack[] = [
+  { id: 'starter', label: 'Starter Pack', gems: 25, priceUsd: 1.25 },
+  { id: 'value', label: 'Value Pack', gems: 120, priceUsd: 6.0 },
+  { id: 'mayor', label: 'Mayor Pack', gems: 300, priceUsd: 15.0 },
+  { id: 'mega', label: 'Mega Pack', gems: 1000, priceUsd: 50.0 },
+];
 
 class Game {
   private gameState: GameStateManager;
@@ -40,6 +55,7 @@ class Game {
   private username = '';
   private lastAutoSaveMs = 0;
   private loadedProgress: SavePayload | null = null;
+  private activeStoreTab: 'buildings' | 'gems' = 'buildings';
   private static readonly USERNAME_STORAGE_KEY = 'yourtown_user';
 
   constructor() {
@@ -61,6 +77,7 @@ class Game {
 
     this.setupStory();
     this.setupBuilding();
+    this.setupStore();
 
     // prepare selector right away so options are visible even during story
     this.prepareBuildingSelector();
@@ -306,6 +323,103 @@ class Game {
     });
   }
 
+  private setupStore(): void {
+    const storeButton = this.ui.getStoreButton();
+    const storeModal = this.ui.getStoreModal();
+    const storeClose = this.ui.getStoreCloseButton();
+    const buildingsTab = this.ui.getStoreBuildingsTab();
+    const gemsTab = this.ui.getStoreGemsTab();
+
+    storeButton.addEventListener('click', () => {
+      this.activeStoreTab = 'buildings';
+      this.renderStore();
+      storeModal.classList.remove('hidden');
+    });
+
+    storeClose.addEventListener('click', () => {
+      storeModal.classList.add('hidden');
+    });
+
+    buildingsTab.addEventListener('click', () => {
+      this.activeStoreTab = 'buildings';
+      this.renderStore();
+    });
+
+    gemsTab.addEventListener('click', () => {
+      this.activeStoreTab = 'gems';
+      this.renderStore();
+    });
+  }
+
+  private renderStore(): void {
+    const buildingsTab = this.ui.getStoreBuildingsTab();
+    const gemsTab = this.ui.getStoreGemsTab();
+    const content = this.ui.getStoreContent();
+
+    buildingsTab.classList.toggle('active', this.activeStoreTab === 'buildings');
+    gemsTab.classList.toggle('active', this.activeStoreTab === 'gems');
+
+    if (this.activeStoreTab === 'buildings') {
+      this.renderBuildingStore(content);
+      return;
+    }
+
+    this.renderGemStore(content);
+  }
+
+  private renderBuildingStore(container: HTMLElement): void {
+    container.innerHTML = '';
+    const list = document.createElement('div');
+    list.className = 'store-list';
+
+    const allBuildings = [...LEVEL_ONE_BUILDINGS, ...UNLOCKABLE_BUILDINGS];
+    allBuildings.forEach((type) => {
+      const row = document.createElement('div');
+      row.className = 'store-item';
+      const unlocked = this.availableBuildingTypes.includes(type);
+      row.innerHTML = `
+        <div class="store-item-label">${BUILDING_ICONS[type]} ${type}</div>
+        <div class="store-item-meta">$${BUILDING_COSTS[type]} · ${unlocked ? 'Unlocked' : 'Locked'}</div>
+      `;
+      list.appendChild(row);
+    });
+
+    container.appendChild(list);
+  }
+
+  private renderGemStore(container: HTMLElement): void {
+    container.innerHTML = '';
+    const note = document.createElement('p');
+    note.className = 'store-note';
+    note.textContent = 'Gems are $0.05 each. Tap a pack to add gems to your town balance.';
+    container.appendChild(note);
+
+    const list = document.createElement('div');
+    list.className = 'store-list';
+
+    GEM_PACKS.forEach((pack) => {
+      const row = document.createElement('div');
+      row.className = 'store-item gem-pack';
+
+      const info = document.createElement('div');
+      info.innerHTML = `<div class="store-item-label">💎 ${pack.label}</div><div class="store-item-meta">${pack.gems} gems · $${pack.priceUsd.toFixed(2)}</div>`;
+
+      const buyButton = document.createElement('button');
+      buyButton.type = 'button';
+      buyButton.textContent = 'Buy';
+      buyButton.addEventListener('click', () => {
+        this.gameState.addGems(pack.gems);
+        this.ui.updateStats(this.gameState.getState());
+        alert(`Purchased ${pack.gems} gems for $${pack.priceUsd.toFixed(2)}.`);
+      });
+
+      row.append(info, buyButton);
+      list.appendChild(row);
+    });
+
+    container.appendChild(list);
+  }
+
   private getLevelGoalMessage(): string {
     return `Level ${this.currentLevel}: Build at least ${this.currentLevel} of each unlocked building type to advance.`;
   }
@@ -319,6 +433,7 @@ class Game {
     if (savedProgress) {
       this.gameState.loadSnapshot({
         money: savedProgress.money,
+        gems: savedProgress.gems,
         population: savedProgress.population,
         incomePerSecond: savedProgress.incomePerSecond,
         populationGrowthRate: savedProgress.populationGrowthRate,
@@ -410,6 +525,7 @@ class Game {
         y: building.y,
       })),
       money: state.money,
+      gems: state.gems,
       population: state.population,
       incomePerSecond: state.incomePerSecond,
       populationGrowthRate: state.populationGrowthRate,

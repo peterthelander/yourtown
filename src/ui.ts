@@ -80,6 +80,7 @@ function getGenderedEmoji(
 export class UI {
   private moneyElement: HTMLElement;
   private populationElement: HTMLElement;
+  private gemsElement: HTMLElement;
   private levelElement: HTMLElement;
   private usernameElement: HTMLElement;
   private editUsernameButton: HTMLButtonElement;
@@ -90,6 +91,7 @@ export class UI {
   constructor() {
     this.moneyElement = this.getElement('money');
     this.populationElement = this.getElement('population');
+    this.gemsElement = this.getElement('gems');
     this.levelElement = this.getElement('level');
     this.usernameElement = this.getElement('username');
     this.editUsernameButton = this.getButtonElement('edit-username');
@@ -114,6 +116,7 @@ export class UI {
   updateStats(state: GameState): void {
     this.moneyElement.textContent = '$' + Math.floor(state.money);
     this.populationElement.textContent = Math.floor(state.population) + ' ppl';
+    this.gemsElement.textContent = `💎 ${Math.floor(state.gems)}`;
   }
 
   updateLevel(level: number): void {
@@ -264,5 +267,37 @@ export class UI {
   updatePersonPosition(element: HTMLElement, x: number, y: number): void {
     element.style.left = x + 'px';
     element.style.top = y + 'px';
+  }
+
+  getStoreButton(): HTMLButtonElement {
+    const btn = document.getElementById('store-button') as HTMLButtonElement | null;
+    if (!btn) throw new Error('Store button not found');
+    return btn;
+  }
+
+  getStoreModal(): HTMLElement {
+    return this.getElement('store-modal');
+  }
+
+  getStoreContent(): HTMLElement {
+    return this.getElement('store-content');
+  }
+
+  getStoreCloseButton(): HTMLButtonElement {
+    const btn = document.getElementById('store-close') as HTMLButtonElement | null;
+    if (!btn) throw new Error('Store close button not found');
+    return btn;
+  }
+
+  getStoreBuildingsTab(): HTMLButtonElement {
+    const btn = document.getElementById('store-buildings-tab') as HTMLButtonElement | null;
+    if (!btn) throw new Error('Store buildings tab not found');
+    return btn;
+  }
+
+  getStoreGemsTab(): HTMLButtonElement {
+    const btn = document.getElementById('store-gems-tab') as HTMLButtonElement | null;
+    if (!btn) throw new Error('Store gems tab not found');
+    return btn;
   }
 }

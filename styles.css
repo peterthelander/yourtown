@@ -146,6 +146,90 @@ footer button {
     padding: 4px 8px;
 }
 
+#store-button {
+    flex: 0 0 auto;
+    font-weight: 700;
+    min-width: 2.2em;
+}
+
+#store-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 40;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+#store-modal.hidden {
+    display: none;
+}
+
+.store-panel {
+    width: min(680px, 100%);
+    max-height: min(85vh, 720px);
+    overflow: auto;
+    background: white;
+    border-radius: 12px;
+    padding: 0.75rem;
+}
+
+.store-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.store-head h2 {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.store-tabs {
+    display: flex;
+    gap: 0.4rem;
+    margin: 0.6rem 0;
+}
+
+.store-tabs button.active {
+    background: #0b6ef3;
+    color: #fff;
+}
+
+.store-note {
+    margin: 0 0 0.5rem;
+    font-size: 0.65rem;
+}
+
+.store-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.store-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 0.4rem 0.5rem;
+}
+
+.store-item-label {
+    font-size: 0.75rem;
+    text-transform: capitalize;
+}
+
+.store-item-meta {
+    font-size: 0.58rem;
+    color: #555;
+}
+
 footer select {
     flex: 1;
 }
