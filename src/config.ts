@@ -45,7 +45,7 @@ export const STORY_FRAMES: StoryFrame[] = [
   },
   {
     img: '',
-    text: 'Build homes, schools, workplaces and more. Watch your population and funds.',
+    text: 'Build homes, schools, workplaces and more. Use gems to cut the ugly grass and make everyone smile.',
   },
   {
     img: '',
