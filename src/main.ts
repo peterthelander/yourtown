@@ -37,6 +37,7 @@ interface GemPack {
 }
 
 const GEM_PACKS: GemPack[] = [
+  { id: 'single', label: 'Single Gem', gems: 1, priceUsd: 0.05 },
   { id: 'starter', label: 'Starter Pack', gems: 25, priceUsd: 1.25 },
   { id: 'value', label: 'Value Pack', gems: 120, priceUsd: 6.0 },
   { id: 'mayor', label: 'Mayor Pack', gems: 300, priceUsd: 15.0 },
