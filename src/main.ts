@@ -391,7 +391,7 @@ class Game {
     container.innerHTML = '';
     const note = document.createElement('p');
     note.className = 'store-note';
-    note.textContent = 'Gems are $0.05 each. Tap a pack to add gems to your town balance.';
+    note.textContent = 'Use gems to cut ugly black-and-vomit-green grass, brighten your town, and put smiles on people\'s faces.';
     container.appendChild(note);
 
     const list = document.createElement('div');
