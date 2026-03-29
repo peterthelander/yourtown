@@ -81,6 +81,7 @@ export class UI {
   private moneyElement: HTMLElement;
   private populationElement: HTMLElement;
   private gemsElement: HTMLElement;
+  private grassStatusElement: HTMLElement;
   private levelElement: HTMLElement;
   private usernameElement: HTMLElement;
   private editUsernameButton: HTMLButtonElement;
@@ -92,6 +93,7 @@ export class UI {
     this.moneyElement = this.getElement('money');
     this.populationElement = this.getElement('population');
     this.gemsElement = this.getElement('gems');
+    this.grassStatusElement = this.getElement('grass-status');
     this.levelElement = this.getElement('level');
     this.usernameElement = this.getElement('username');
     this.editUsernameButton = this.getButtonElement('edit-username');
@@ -117,6 +119,7 @@ export class UI {
     this.moneyElement.textContent = '$' + Math.floor(state.money);
     this.populationElement.textContent = Math.floor(state.population) + ' ppl';
     this.gemsElement.textContent = `💎 ${Math.floor(state.gems)}`;
+    this.grassStatusElement.textContent = `🌿 ${Math.floor(state.grimeLevel)}%`;
   }
 
   updateLevel(level: number): void {
@@ -273,6 +276,18 @@ export class UI {
     const btn = document.getElementById('store-button') as HTMLButtonElement | null;
     if (!btn) throw new Error('Store button not found');
     return btn;
+  }
+
+  getUseGemButton(): HTMLButtonElement {
+    const btn = document.getElementById('use-gem-button') as HTMLButtonElement | null;
+    if (!btn) throw new Error('Use gem button not found');
+    return btn;
+  }
+
+  updateGrassVisual(grimeLevel: number): void {
+    const levelClass = grimeLevel <= 0 ? 'town-clean' : grimeLevel < 34 ? 'town-grime-low' : grimeLevel < 67 ? 'town-grime-mid' : 'town-grime-high';
+    this.townView.classList.remove('town-clean', 'town-grime-low', 'town-grime-mid', 'town-grime-high');
+    this.townView.classList.add(levelClass);
   }
 
   getStoreModal(): HTMLElement {

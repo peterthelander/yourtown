@@ -24,6 +24,7 @@ interface SavePayload {
   buildings: BuildingSnapshot[];
   money: number;
   gems: number;
+  grimeLevel: number;
   population: number;
   incomePerSecond: number;
   populationGrowthRate: number;
@@ -45,6 +46,8 @@ const GEM_PACKS: GemPack[] = [
 ];
 
 class Game {
+  private static readonly GEM_CLEAN_AMOUNT = 30;
+  private static readonly GRASS_REGROWTH_PER_SECOND = 1.5;
   private gameState: GameStateManager;
   private buildingManager: BuildingManager;
   private ui: UI;
@@ -57,6 +60,7 @@ class Game {
   private lastAutoSaveMs = 0;
   private loadedProgress: SavePayload | null = null;
   private activeStoreTab: 'buildings' | 'gems' = 'buildings';
+  private lastGrimeTickMs = 0;
   private static readonly USERNAME_STORAGE_KEY = 'yourtown_user';
 
   constructor() {
@@ -79,6 +83,7 @@ class Game {
     this.setupStory();
     this.setupBuilding();
     this.setupStore();
+    this.setupGemCleaning();
 
     // prepare selector right away so options are visible even during story
     this.prepareBuildingSelector();
@@ -352,6 +357,31 @@ class Game {
     });
   }
 
+  private setupGemCleaning(): void {
+    const useGemButton = this.ui.getUseGemButton();
+    useGemButton.addEventListener('click', () => this.handleUseGem());
+  }
+
+  private handleUseGem(): void {
+    const state = this.gameState.getState();
+    if (state.gems < 1) {
+      alert('You need at least 1 gem.');
+      return;
+    }
+
+    this.gameState.addGems(-1);
+    this.gameState.setGrimeLevel(state.grimeLevel - Game.GEM_CLEAN_AMOUNT);
+    const updatedState = this.gameState.getState();
+    this.ui.updateStats(updatedState);
+    this.ui.updateGrassVisual(updatedState.grimeLevel);
+
+    if (updatedState.grimeLevel <= 0) {
+      alert('The ugly grass is gone! Bright flowers and fresh-cut grass are now visible.');
+    }
+
+    void this.saveProgress(true, updatedState);
+  }
+
   private renderStore(): void {
     const buildingsTab = this.ui.getStoreBuildingsTab();
     const gemsTab = this.ui.getStoreGemsTab();
@@ -392,7 +422,7 @@ class Game {
     container.innerHTML = '';
     const note = document.createElement('p');
     note.className = 'store-note';
-    note.textContent = 'Use gems to cut ugly black-and-vomit-green grass, brighten your town, and put smiles on people\'s faces.';
+    note.textContent = 'Use a gem each time to clear dark grass. It clears immediately, then slowly grows back.';
     container.appendChild(note);
 
     const list = document.createElement('div');
@@ -435,6 +465,7 @@ class Game {
       this.gameState.loadSnapshot({
         money: savedProgress.money,
         gems: savedProgress.gems,
+        grimeLevel: savedProgress.grimeLevel,
         population: savedProgress.population,
         incomePerSecond: savedProgress.incomePerSecond,
         populationGrowthRate: savedProgress.populationGrowthRate,
@@ -450,7 +481,9 @@ class Game {
     }
 
     this.engine.start();
+    this.lastGrimeTickMs = Date.now();
     this.ui.updateStats(this.gameState.getState());
+    this.ui.updateGrassVisual(this.gameState.getState().grimeLevel);
     this.ui.updateLevel(this.currentLevel);
 
     if (!savedProgress) {
@@ -527,6 +560,7 @@ class Game {
       })),
       money: state.money,
       gems: state.gems,
+      grimeLevel: state.grimeLevel,
       population: state.population,
       incomePerSecond: state.incomePerSecond,
       populationGrowthRate: state.populationGrowthRate,
@@ -538,6 +572,14 @@ class Game {
   }
 
   private handleTick(state: GameState): void {
+    const now = Date.now();
+    const elapsedSeconds = Math.max(0, (now - this.lastGrimeTickMs) / 1000);
+    this.lastGrimeTickMs = now;
+    if (elapsedSeconds > 0) {
+      this.gameState.setGrimeLevel(state.grimeLevel + elapsedSeconds * Game.GRASS_REGROWTH_PER_SECOND);
+      state = this.gameState.getState();
+      this.ui.updateGrassVisual(state.grimeLevel);
+    }
     void this.saveProgress(false, state);
   }
 
