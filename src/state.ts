@@ -4,6 +4,7 @@ import { GAME_CONFIG } from './config';
 interface StateSnapshot {
   money: number;
   gems?: number;
+  grimeLevel?: number;
   population: number;
   incomePerSecond: number;
   populationGrowthRate: number;
@@ -16,6 +17,7 @@ export class GameStateManager {
     this.state = {
       money: GAME_CONFIG.INITIAL_MONEY,
       gems: 0,
+      grimeLevel: 100,
       population: GAME_CONFIG.INITIAL_POPULATION,
       buildings: [],
       buildingCounts: {} as Record<BuildingType, number>,
@@ -32,6 +34,7 @@ export class GameStateManager {
   loadSnapshot(snapshot: StateSnapshot): void {
     this.state.money = snapshot.money;
     this.state.gems = Math.max(0, Math.floor(snapshot.gems ?? this.state.gems));
+    this.state.grimeLevel = Math.max(0, Math.min(100, snapshot.grimeLevel ?? this.state.grimeLevel));
     this.state.population = snapshot.population;
     this.state.incomePerSecond = snapshot.incomePerSecond;
     this.state.populationGrowthRate = snapshot.populationGrowthRate;
@@ -43,6 +46,10 @@ export class GameStateManager {
 
   addGems(amount: number): void {
     this.state.gems = Math.max(0, this.state.gems + Math.floor(amount));
+  }
+
+  setGrimeLevel(value: number): void {
+    this.state.grimeLevel = Math.max(0, Math.min(100, value));
   }
 
   spendMoney(amount: number): boolean {

@@ -29,6 +29,7 @@ export interface StoryFrame {
 export interface GameState {
   money: number;
   gems: number;
+  grimeLevel: number;
   population: number;
   buildings: Building[];
   buildingCounts: Record<BuildingType, number>;

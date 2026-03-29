@@ -118,8 +118,30 @@ header {
 #town-view {
     flex: 1;
     position: relative;
-    background: #cfe;
+    background: linear-gradient(180deg, #9ecf6f 0%, #6aa748 100%);
     overflow: hidden;
+    transition: background 0.4s ease;
+}
+
+#town-view.town-grime-high {
+    background: linear-gradient(180deg, #5d6a22 0%, #2f3320 100%);
+}
+
+#town-view.town-grime-mid {
+    background: linear-gradient(180deg, #798636 0%, #4a5f2d 100%);
+}
+
+#town-view.town-grime-low {
+    background: linear-gradient(180deg, #9fcf6f 0%, #6cae49 100%);
+}
+
+#town-view.town-clean {
+    background:
+        radial-gradient(circle at 14% 20%, #f5da4e 0 6px, transparent 7px),
+        radial-gradient(circle at 28% 70%, #f08ec6 0 6px, transparent 7px),
+        radial-gradient(circle at 62% 45%, #89d7ff 0 6px, transparent 7px),
+        radial-gradient(circle at 78% 18%, #ffe977 0 6px, transparent 7px),
+        linear-gradient(180deg, #b6ee8f 0%, #7cc95e 100%);
 }
 
 footer {
@@ -150,6 +172,11 @@ footer button {
     flex: 0 0 auto;
     font-weight: 700;
     min-width: 2.2em;
+}
+
+#use-gem-button {
+    flex: 0 0 auto;
+    font-weight: 700;
 }
 
 #store-modal {
