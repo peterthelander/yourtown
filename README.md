@@ -2,6 +2,13 @@
 
 A browser-based strategy game where you act as the mayor of a newly founded settlement, written in TypeScript with a modular architecture.
 
+**Status:** playable browser prototype.
+[Try Your Town](https://yourtown.vercel.app/).
+
+Build a settlement, balance construction costs against income, and watch residents
+move around the town. The interface is the quickest way to explore the idea;
+the source separates state, building behavior, the game loop, and rendering.
+
 ## Project Structure
 
 ```
@@ -18,13 +25,11 @@ dist/
   └── bundle.js        # Compiled & bundled output
 ```
 
-## SOLID Principles Applied
+## Design
 
-- **Single Responsibility:** Each class handles one concern (state, buildings, UI, story, gameloop)
-- **Open/Closed:** Easy to extend building effects or story frames without modifying core logic
-- **Liskov Substitution:** Interfaces allow swapping implementations
-- **Interface Segregation:** Minimal interfaces, focused on specific concerns
-- **Dependency Injection:** Classes receive dependencies (GameStateManager, BuildingManager, UI) in their constructors
+The code separates game state, building rules, the update loop, and UI rendering.
+Managers receive shared dependencies through their constructors, keeping the
+main game orchestration distinct from individual rules and presentation.
 
 ## Features
 
@@ -41,40 +46,25 @@ dist/
 
 ## Development Setup
 
-### Prerequisites
-- Node.js & npm installed
-- Python 3 (for local server)
-
-### Build
+Use Node.js 20.x (as specified in `package.json`) and npm. From the repository root:
 
 ```bash
-npm install          # Install dependencies (TypeScript, esbuild)
-npm run build        # Compile TypeScript to JavaScript bundle
+npm ci
+npm run build
+npm run serve
 ```
 
-### Development Workflow
+Open http://localhost:3000. The initial build copies HTML and CSS into `dist/`.
+For TypeScript development after that first build:
 
-**Option 1: VS Code with F5**
-1. Press **F5** to start both server and open game in browser
-2. After source code changes, rebuild manually or use watch mode
+```bash
+npm run dev
+```
 
-**Option 2: Manual development**
-1. **Terminal 1** - Watch mode (auto-rebuilds on save):
-   ```bash
-   npm run dev
-   ```
-2. **Terminal 2** - Start server:
-   ```bash
-   python3 -m http.server 8000
-   ```
-3. Open `http://localhost:8000` in browser
-
-### Run via VS Code Tasks
-
-- **Ctrl+Shift+P** → "Run Task" → choose:
-  - "Build TypeScript" (one-time compile)
-  - "Watch TypeScript" (auto-compile on save)
-  - "Serve Your Town" (start HTTP server)
+This runs the TypeScript bundle watcher and static server together. HTML/CSS changes
+need another `npm run build` to copy them into `dist/`. Vercel API routes under
+`api/` require a separate configured serverless environment; the static local server
+does not emulate them or provide cloud persistence.
 
 ## How to Play
 
