@@ -6,7 +6,7 @@
     "node": "20.x"
   },
   "scripts": {
-    "build": "esbuild src/main.ts --bundle --outfile=dist/bundle.js && cp index.html dist/index.html && cp styles.css dist/styles.css",
+    "build": "node scripts/build.mjs",
     "watch": "esbuild src/main.ts --bundle --outfile=dist/bundle.js --watch",
     "serve": "serve dist -l 3000",
     "dev": "concurrently \"npm:watch\" \"npm:serve\""
