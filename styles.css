@@ -386,3 +386,19 @@ footer select {
     color: #bb1a1a;
     min-height: 1em;
 }
+
+@media (max-width: 600px) {
+    .store-tabs {
+        flex-wrap: wrap;
+    }
+
+    .store-tabs button,
+    .store-item button {
+        font-size: 18px;
+        min-height: 44px;
+    }
+
+    .store-item {
+        flex-wrap: wrap;
+    }
+}

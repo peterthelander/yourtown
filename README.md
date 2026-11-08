@@ -3,7 +3,7 @@
 A browser-based strategy game where you act as the mayor of a newly founded settlement, written in TypeScript with a modular architecture.
 
 **Status:** playable browser prototype.
-[Try Your Town](https://yourtown.vercel.app/).
+[Try Your Town](https://peterthelander.github.io/yourtown/).
 
 Build a settlement, balance construction costs against income, and watch residents
 move around the town. The interface is the quickest way to explore the idea;
@@ -62,13 +62,14 @@ npm run dev
 ```
 
 This runs the TypeScript bundle watcher and static server together. HTML/CSS changes
-need another `npm run build` to copy them into `dist/`. Vercel API routes under
-`api/` require a separate configured serverless environment; the static local server
-does not emulate them or provide cloud persistence.
+need another `npm run build` to copy them into `dist/`. The game runs entirely in the browser. Progress saves locally every five seconds
+and after purchases. Saves stay in the same browser and device; clearing site data
+removes them. There is no shared leaderboard or cloud save on GitHub Pages.
+The legacy Vercel API routes in `api/` are not used by the game.
 
 ## How to Play
 
-1. Click through the story intro (click "Next")
+1. Choose a mayor name (the story intro is currently skipped)
 2. Mayor screen appears with 20 people and $100
 3. Watch money increase automatically
 4. Click building buttons to construct (costs deduct immediately, effects apply)
@@ -82,6 +83,14 @@ does not emulate them or provide cloud persistence.
 - [ ] Structured/grid-based placement & roads
 - [ ] More building effects & balancing
 - [ ] Game events/challenges
-- [ ] Mobile responsiveness
-- [ ] Save/load persistence
+- [x] Mobile responsiveness
+- [x] Save/load progress in the current browser
 - [ ] Sound & animations
+
+## Deployment
+
+[Play Your Town on GitHub Pages](https://peterthelander.github.io/yourtown/).
+Pushing to `main` runs `.github/workflows/pages.yml`: it installs dependencies,
+checks TypeScript, builds the game, and publishes only `dist/` to GitHub Pages.
+You can also run the **Deploy GitHub Pages** workflow manually from GitHub Actions.
+No Vercel account, database, or environment secrets are required.

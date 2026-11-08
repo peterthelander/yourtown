@@ -62,6 +62,7 @@ class Game {
   private activeStoreTab: 'buildings' | 'gems' = 'buildings';
   private lastGrimeTickMs = 0;
   private static readonly USERNAME_STORAGE_KEY = 'yourtown_user';
+  private static readonly PROGRESS_STORAGE_KEY = 'yourtown_progress';
 
   constructor() {
     this.gameState = new GameStateManager();
@@ -113,7 +114,7 @@ class Game {
     title.textContent = 'Welcome to Your Town';
 
     const subtitle = document.createElement('p');
-    subtitle.textContent = 'Pick a username to save your progress and appear on the leaderboard.';
+    subtitle.textContent = 'Name your mayor. Your town saves automatically in this browser.';
 
     const input = document.createElement('input');
     input.placeholder = 'Mayor name';
@@ -226,20 +227,20 @@ class Game {
 
   private async loadProgress(): Promise<void> {
     try {
-      const response = await fetch(`/api/save-progress?username=${encodeURIComponent(this.username)}`);
-      if (!response.ok) {
+      const saved = localStorage.getItem(Game.PROGRESS_STORAGE_KEY);
+      if (!saved) return;
+
+      const progress = JSON.parse(saved) as SavePayload;
+      if (!Array.isArray(progress.buildings) ||
+          ![progress.level, progress.money, progress.population,
+            progress.incomePerSecond, progress.populationGrowthRate].every(Number.isFinite)) {
         return;
       }
 
-      const data = (await response.json()) as { progress?: SavePayload };
-      if (!data.progress) {
-        return;
-      }
-
-      this.loadedProgress = data.progress;
-      this.currentLevel = Math.max(1, Math.floor(data.progress.level || 1));
+      this.loadedProgress = progress;
+      this.currentLevel = Math.max(1, Math.floor(progress.level));
     } catch {
-      // no-op: game should still boot offline/local dev without API routes
+      // An unavailable or invalid local save should not prevent a new game.
     }
   }
 
@@ -441,6 +442,7 @@ class Game {
       buyButton.addEventListener('click', () => {
         this.gameState.addGems(pack.gems);
         this.ui.updateStats(this.gameState.getState());
+        void this.saveProgress(true);
         alert(`Purchased ${pack.gems} gems for $${pack.priceUsd.toFixed(2)}.`);
       });
 
@@ -595,15 +597,9 @@ class Game {
     this.lastAutoSaveMs = now;
 
     try {
-      await fetch('/api/save-progress', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(this.buildSavePayload(state)),
-      });
+      localStorage.setItem(Game.PROGRESS_STORAGE_KEY, JSON.stringify(this.buildSavePayload(state)));
     } catch {
-      // no-op
+      // Keep playing if browser storage is full or unavailable.
     }
   }
 }
