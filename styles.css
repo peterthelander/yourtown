@@ -1,3 +1,8 @@
+/* Include padding in constrained mobile layouts, including dialogs. */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 /* basic resets */
 html {
     font-size: 200%;
@@ -64,7 +69,8 @@ header {
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
-    padding: 0 0.5rem;
+    flex-wrap: wrap;
+    padding: 0.25rem 0.5rem;
     box-sizing: border-box;
     font-size: clamp(18px, 5vw, 26px);
 }
@@ -73,7 +79,9 @@ header {
     display: flex;
     align-items: center;
     gap: 0.6em;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
+    min-width: 0;
+    justify-content: flex-end;
 }
 
 #stats span {
@@ -259,6 +267,44 @@ footer button {
 
 footer select {
     flex: 1;
+    min-width: 0;
+}
+
+@media (max-width: 600px) {
+    header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.25rem;
+    }
+
+    #stats {
+        justify-content: flex-start;
+    }
+
+    #username-wrap {
+        flex-basis: 100%;
+    }
+
+    #username {
+        max-width: 100%;
+    }
+
+    #town-view {
+        min-height: 45dvh;
+    }
+
+    footer {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    footer select,
+    footer button {
+        width: 100%;
+        min-width: 0;
+        min-height: 44px;
+        font-size: 18px;
+    }
 }
 
 .building {

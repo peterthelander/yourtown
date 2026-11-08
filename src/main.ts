@@ -258,9 +258,9 @@ class Game {
 
     if (frame.img) {
       img.src = frame.img;
-      img.style.display = '';
+      img.hidden = false;
     } else {
-      img.style.display = 'none';
+      img.hidden = true;
     }
     text.textContent = frame.text;
   }
