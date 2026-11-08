@@ -16,11 +16,11 @@
     <div id="game-container" class="hidden">
         <header>
             <div id="level">Level 1</div>
+            <div id="username-wrap">
+                <span id="username">Mayor</span>
+                <button id="edit-username" type="button" aria-label="Edit username" title="Edit username">✏️</button>
+            </div>
             <div id="stats">
-                <div id="username-wrap">
-                    <span id="username">Mayor</span>
-                    <button id="edit-username" type="button" aria-label="Edit username" title="Edit username">✏️</button>
-                </div>
                 <span id="money">$100</span>
                 <span id="gems">💎 0</span>
                 <span id="grass-status">🌿 100%</span>
@@ -31,7 +31,7 @@
             <!-- buildings will appear here -->
         </div>
         <footer>
-            <button id="store-button" aria-label="Open Store">S</button>
+            <button id="store-button" aria-label="Open Store">Store</button>
             <button id="use-gem-button" type="button" aria-label="Use one gem to clear the grass">Use Gem</button>
             <select id="building-type" aria-label="Building type"></select>
             <button id="build-button">Build</button>

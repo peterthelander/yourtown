@@ -273,20 +273,31 @@ footer select {
 @media (max-width: 600px) {
     header {
         display: grid;
-        grid-template-columns: minmax(0, 1fr);
-        gap: 0.25rem;
+        grid-template-columns: auto minmax(0, 1fr);
+        column-gap: 0.5rem;
+        row-gap: 0.25rem;
     }
 
     #stats {
-        justify-content: flex-start;
+        grid-column: 1 / -1;
+        justify-content: space-between;
+        gap: 0.4em;
     }
 
     #username-wrap {
-        flex-basis: 100%;
+        justify-content: flex-end;
     }
 
     #username {
+        min-width: 0;
         max-width: 100%;
+        text-align: right;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    #edit-username {
+        flex-shrink: 0;
     }
 
     #town-view {
